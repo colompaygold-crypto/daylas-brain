@@ -161,6 +161,15 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .grades .h{color:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.8px}
 .grades .g{color:var(--gold);font-weight:700}
 
+/* Bienvenida */
+.setup{display:flex;flex-direction:column;gap:10px;text-align:center}
+.setup h3{margin:4px 0 0}
+.setup label{font-weight:600;font-size:17px;margin-top:6px}
+#setupName{width:100%;font:inherit;font-size:22px;text-align:center;padding:12px 14px;border-radius:16px;border:2px solid var(--line);background:var(--stage2);color:var(--ink)}
+.setup .cats{margin:0}
+.setup .btn{font-size:20px;padding:14px 22px;margin-top:6px}
+.setup .btn:disabled{opacity:.4;cursor:not-allowed}
+
 /* Música */
 .music{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--pink);color:#fff;font-size:26px;display:grid;place-items:center;box-shadow:0 0 0 4px #ffffff33,0 8px 24px #0008;z-index:15}
 .music.off{background:var(--stage2)}
@@ -489,6 +498,19 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 
 </div>
 <button class="music" id="musicBtn" aria-label="Música de fondo">🎵</button>
+<div class="modal" id="setupModal" hidden role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+  <div class="mbox setup">
+    <div style="font-size:54px;line-height:1">🌟</div>
+    <h3 id="setupTitle">¡Bienvenidos a Dayla's Brain!</h3>
+    <p class="mpts">Antes de jugar, cuéntanos quién va a aprender.</p>
+    <label for="setupName">¿Cómo se llama el niño o la niña?</label>
+    <input id="setupName" maxlength="20" placeholder="Escribe su nombre" autocomplete="off">
+    <label>¿Cuántos años tiene?</label>
+    <div class="cats" id="setupAge"></div>
+    <button class="btn" id="setupGo" disabled>¡Empezar a jugar!</button>
+    <p class="mpts" style="font-size:14px">Puedes cambiarlo cuando quieras en la Zona de papás.</p>
+  </div>
+</div>
 <div class="modal" id="roundModal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="mbox">
     <div class="mstars" id="mStars"></div>
@@ -507,9 +529,9 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[
 /* ---------- Estado ---------- */
 const AREAS=[["leer","Leer"],["palabras","Palabras"],["escribir","Escribir"],["numeros","Números"],["ingles","English"]];
 const zero=()=>({leer:0,palabras:0,escribir:0,numeros:0,ingles:0});
-const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,ingles:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"Dayla"});
+const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,ingles:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"",age:null,setup:false});
 let S=newS();
-try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s){S={...S,...s};S.miss={...zero(),...(s.miss||{})};if(s.pts==null)S.pts=(s.stars||0)*10}}catch(e){}
+try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s){S={...S,...s};if(s.setup==null)S.setup=true;S.miss={...zero(),...(s.miss||{})};if(s.pts==null)S.pts=(s.stars||0)*10}}catch(e){}
 const RANKS=[[0,"Semilla 🌱"],[100,"Estrellita ⭐"],[300,"Cantante 🎤"],[600,"Estrella K-pop 🌟"],[1000,"Súper Estrella 💫"],[2000,"Leyenda 👑"]];
 const rankOf=p=>{let i=0;RANKS.forEach((r,j)=>{if(p>=r[0])i=j});return i};
 const gradeOf=a=>a>=.9?"Excelente":a>=.75?"Muy bien":a>=.6?"Bien":"Sigue practicando";
@@ -744,11 +766,13 @@ newCount();newSum();newCmp();
 /* ---------- PALABRAS ---------- */
 const WORDS=[["ma-má","👩"],["pa-pá","👨"],["ca-sa","🏠"],["lu-na","🌙"],["ga-to","🐱"],["pa-to","🦆"],["sa-po","🐸"],["mo-no","🐒"],["de-do","☝️"],["nu-be","☁️"],["so-pa","🍲"],["va-ca","🐮"],["fo-ca","🦭"],["o-so","🐻"],["ro-sa","🌹"],["lu-pa","🔍"],["ca-ma","🛏️"],["bo-ta","👢"],["da-do","🎲"],["ma-no","✋"],["pi-ña","🍍"],["le-che","🥛"],["Day-la","👧"],
   ["pe-lo-ta","⚽"],["to-ma-te","🍅"],["co-ne-jo","🐰"],["pa-lo-ma","🕊️"],["ca-mi-sa","👕"],["mu-ñe-ca","🪆"],["ba-na-no","🍌"],["za-pa-to","👟"],["ga-lle-ta","🍪"],["co-me-ta","🪁"],["ca-ba-llo","🐴"],["pa-ta-ta","🥔"]];
-const SENT=[["Mi mamá me ama","👩💕"],["El gato toma leche","🐱🥛"],["Papá lee un libro","👨📖"],["La luna es bonita","🌙✨"],["Dayla canta en la casa","👧🎤🏠"],["El sapo salta","🐸"],["Yo amo a mi papá","👧💕👨"],["La vaca come pasto","🐮🌿"],["El oso toma sopa","🐻🍲"],["Mi pelota es roja","⚽🔴"],["El pato nada","🦆💧"],["Dayla come piña","👧🍍"]];
+const SENT=[["Mi mamá me ama","👩💕"],["El gato toma leche","🐱🥛"],["Papá lee un libro","👨📖"],["La luna es bonita","🌙✨"],["{N} canta en la casa","👧🎤🏠"],["El sapo salta","🐸"],["Yo amo a mi papá","👧💕👨"],["La vaca come pasto","🐮🌿"],["El oso toma sopa","🐻🍲"],["Mi pelota es roja","⚽🔴"],["El pato nada","🦆💧"],["{N} come piña","👧🍍"]];
 const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
 const syls=w=>w[0].split("-"), plain=w=>w[0].replace(/-/g,"");
 let palLvl=2;
-const pickWord=prev=>{const l=WORDS.filter(w=>syls(w).length===palLvl&&w!==prev);return l[rnd(l.length)]};
+const okW=w=>w[0]!=="Day-la"||norm(S.name||"")==="dayla";
+const NM=t=>t.replace(/\{N\}/g,(S.name||"Dayla").trim());
+const pickWord=prev=>{const l=WORDS.filter(w=>syls(w).length===palLvl&&w!==prev&&okW(w));return l[rnd(l.length)]};
 
 function tileGame(slotsEl,tilesEl,parts,extras,small,onDone,area,sp){area=area||"palabras";sp=sp||say;
   slotsEl.innerHTML="";tilesEl.innerHTML="";let pos=0;
@@ -791,7 +815,7 @@ $("#bSay").onclick=()=>say(plain(bW));$("#bSkip").onclick=newBuild;
 
 /* Lee y elige */
 let rW;
-function newRead(){const l=shuffle(WORDS.filter(w=>syls(w).length===palLvl&&w!==rW)).slice(0,3);rW=l[0];
+function newRead(){const l=shuffle(WORDS.filter(w=>syls(w).length===palLvl&&w!==rW&&okW(w))).slice(0,3);rW=l[0];
   $("#rWord").textContent=plain(rW);const box=$("#rPics");box.innerHTML="";
   shuffle(l.slice()).forEach(w=>{const b=document.createElement("button");b.textContent=w[1];b.setAttribute("aria-label","Dibujo "+(box.children.length+1));
     b.onclick=()=>{if(w===rW){b.style.borderColor="var(--mint)";win("palabras",plain(rW));setTimeout(newRead,1500)}else{miss("palabras");b.style.borderColor="#ff6b6b";say("Lee otra vez")}};box.appendChild(b)})}
@@ -808,9 +832,9 @@ $("#sSay").onclick=()=>say(plain(sW));$("#sRedo").onclick=()=>newSpell(true);$("
 /* Oraciones */
 let tS;
 function newSent(keep){if(!keep){let n;do{n=SENT[rnd(SENT.length)]}while(n===tS);tS=n}
-  $("#tPic").textContent=tS[1];const p=tS[0].split(" ");p[p.length-1]+=".";
-  tileGame($("#tSlots"),$("#tTiles"),p,[],true,()=>{win("palabras",tS[0]);setTimeout(()=>newSent(),2200)})}
-$("#tSay").onclick=()=>say(tS[0]);$("#tRedo").onclick=()=>newSent(true);$("#tSkip").onclick=()=>newSent();
+  $("#tPic").textContent=tS[1];const p=NM(tS[0]).split(/\s+/);p[p.length-1]+=".";
+  tileGame($("#tSlots"),$("#tTiles"),p,[],true,()=>{win("palabras",NM(tS[0]));setTimeout(()=>newSent(),2200)})}
+$("#tSay").onclick=()=>say(NM(tS[0]));$("#tRedo").onclick=()=>newSent(true);$("#tSkip").onclick=()=>newSent();
 
 $$("[data-lvl]").forEach(t=>t.addEventListener("click",()=>{$$("[data-lvl]").forEach(x=>x.setAttribute("aria-selected",x===t));palLvl=+t.dataset.lvl;newBuild();newRead();newSpell(true===false)}));
 newBuild();newRead();sW=pickWord();newSpell(true);newSent();
@@ -857,19 +881,28 @@ function newSpellEn(){let n;do{n=CVC[rnd(CVC.length)]}while(n===xW);xW=n;$("#xPi
   tileGame($("#xSlots"),$("#xTiles"),letters,ex,true,()=>{win("ingles",letters.join(", ")+". "+xW[0],true);setTimeout(newSpellEn,2200)},"ingles",sayEn)}
 $("#xSay").onclick=()=>sayEn(xW[0]);$("#xSkip").onclick=newSpellEn;newSpellEn();
 
-const ESENT=[["I see a cat","👀🐱","Veo un gato"],["The dog is big","🐶","El perro es grande"],["I like red","❤️","Me gusta el rojo"],["I love my mom","👩💕","Amo a mi mamá"],["The sun is hot","☀️","El sol está caliente"],["I have a ball","⚽","Tengo una pelota"],["My name is Dayla","👧","Me llamo Dayla"],["I can jump","🤸","Puedo saltar"],["The fish can swim","🐟","El pez puede nadar"],["I am happy","😊","Estoy feliz"],["Good morning, Dad","👨☀️","Buenos días, papá"],["I like to read","📖","Me gusta leer"]];
+const ESENT=[["I see a cat","👀🐱","Veo un gato"],["The dog is big","🐶","El perro es grande"],["I like red","❤️","Me gusta el rojo"],["I love my mom","👩💕","Amo a mi mamá"],["The sun is hot","☀️","El sol está caliente"],["I have a ball","⚽","Tengo una pelota"],["My name is {N}","👧","Me llamo {N}"],["I can jump","🤸","Puedo saltar"],["The fish can swim","🐟","El pez puede nadar"],["I am happy","😊","Estoy feliz"],["Good morning, Dad","👨☀️","Buenos días, papá"],["I like to read","📖","Me gusta leer"]];
 let yS;
 function newSentEn(keep){if(!keep){let n;do{n=ESENT[rnd(ESENT.length)]}while(n===yS);yS=n}
-  $("#ySPic").textContent=yS[1];$("#yTrans").textContent=yS[2];const p=yS[0].split(" ");p[p.length-1]+=".";
-  tileGame($("#ySlots"),$("#yTiles"),p,[],true,()=>{win("ingles",yS[0],true);setTimeout(()=>newSentEn(),2400)},"ingles",sayEn)}
-$("#ySay").onclick=()=>sayEn(yS[0]);$("#yRedo").onclick=()=>newSentEn(true);$("#ySkip").onclick=()=>newSentEn();newSentEn();
+  $("#ySPic").textContent=yS[1];$("#yTrans").textContent=NM(yS[2]);const p=NM(yS[0]).split(/\s+/);p[p.length-1]+=".";
+  tileGame($("#ySlots"),$("#yTiles"),p,[],true,()=>{win("ingles",NM(yS[0]),true);setTimeout(()=>newSentEn(),2400)},"ingles",sayEn)}
+$("#ySay").onclick=()=>sayEn(NM(yS[0]));$("#yRedo").onclick=()=>newSentEn(true);$("#ySkip").onclick=()=>newSentEn();newSentEn();
 newListen();
 
 /* ---------- PADRES ---------- */
 $("#musicBtn").onclick=()=>{if(M.on&&!M.timer){mStart();return}M.on=!M.on;try{localStorage.setItem("dbMusic",M.on?"1":"0")}catch(e){}if(M.on)mStart();else mStop()};mBtn();
+let setupAge=null;
+["4","5","6","7","8+"].forEach(a=>{const b=document.createElement("button");b.textContent=a+" años";b.onclick=()=>{setupAge=a;$$("#setupAge button").forEach(x=>x.classList.toggle("on",x===b));chk()};$("#setupAge").appendChild(b)});
+const chk=()=>$("#setupGo").disabled=!$("#setupName").value.trim();
+$("#setupName").addEventListener("input",chk);
+$("#setupName").addEventListener("keydown",e=>{if(e.key==="Enter"&&!$("#setupGo").disabled)$("#setupGo").click()});
+$("#setupGo").onclick=()=>{const n=$("#setupName").value.trim().replace(/\s+/g," ");if(!n)return;
+  S.name=n.charAt(0).toUpperCase()+n.slice(1);S.age=setupAge;S.setup=true;save();render();$("#nameInput").value=S.name;
+  $("#setupModal").hidden=true;newSent();newSentEn();newBuild();newRead();say(`¡Hola ${S.name}! Vamos a aprender jugando.`)};
+if(!S.setup){$("#setupModal").hidden=false;setTimeout(()=>{try{$("#setupName").focus()}catch(e){}},300)}
 $("#nameInput").value=S.name;
 $("#nameInput").addEventListener("input",e=>{S.name=e.target.value.trim();save();render()});
 $("#resetBtn").onclick=()=>$("#resetAsk").hidden=false;
-$("#resetYes").onclick=()=>{S=newS(S.name);save();render();$("#resetAsk").hidden=true};
+$("#resetYes").onclick=()=>{const a=S.age;S=newS(S.name);S.age=a;S.setup=true;save();render();$("#resetAsk").hidden=true};
 render();
 </script>
