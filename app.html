@@ -123,6 +123,28 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .lvl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;color:var(--soft);align-items:center;font-size:16px}
 @media (max-width:560px){.tile{font-size:26px;padding:10px 14px;min-width:52px}.slot{min-width:60px;height:66px;font-size:32px}.slot.sm{min-width:38px;height:54px;font-size:26px}.pics button{font-size:48px}.bigpic{font-size:80px}}
 
+/* Puntaje, rango, compartir, instalar */
+.homeBtns{display:flex;gap:8px;flex-wrap:wrap}
+.pill{background:var(--stage2);border:2px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:600;font-size:15px}
+.pill.hot{background:var(--mint);color:var(--night);border-color:var(--mint)}
+.rank{margin-top:12px;font-size:16px;color:var(--soft)}
+.rank b{color:var(--ink)}
+.rankbar{height:10px;background:#0005;border-radius:9px;overflow:hidden;margin-top:6px;max-width:320px}
+.rankbar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--pink));border-radius:9px;transition:width .5s}
+@media (max-width:560px){.rankbar{margin-inline:auto}}
+.modal{position:fixed;inset:0;background:#0b0620cc;display:grid;place-items:center;z-index:30;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mbox{background:var(--stage);border:3px solid var(--gold);border-radius:30px;padding:26px 22px;text-align:center;max-width:420px;width:100%;box-shadow:0 0 60px #ffd23f55;animation:pop2 .4s ease both}
+@keyframes pop2{from{transform:scale(.6);opacity:0}}
+.mstars{font-size:58px;letter-spacing:6px;color:var(--gold);text-shadow:0 0 20px #ffd23faa;line-height:1}
+.mstars .off{color:#ffffff30;text-shadow:none}
+.mbox h3{font-size:28px;margin:10px 0 4px}
+.mgrade{font-size:24px;font-weight:700;color:var(--mint);margin:4px 0}
+.mpts{color:var(--soft);margin:4px 0 0;font-size:17px}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--night);padding:12px 20px;border-radius:999px;font-weight:600;z-index:40;max-width:calc(100% - 32px);text-align:center;font-size:16px}
+.grades{display:grid;grid-template-columns:minmax(84px,1fr) auto auto auto;gap:10px 12px;margin:14px 0;font-variant-numeric:tabular-nums;align-items:center;font-size:16px}
+.grades .h{color:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.8px}
+.grades .g{color:var(--gold);font-weight:700}
+
 /* Música */
 .music{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--pink);color:#fff;font-size:26px;display:grid;place-items:center;box-shadow:0 0 0 4px #ffffff33,0 8px 24px #0008;z-index:15}
 .music.off{background:var(--stage2)}
@@ -153,7 +175,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 
 <!-- ============ HOME ============ -->
 <section id="home">
-  <div class="top"><span></span><span class="stars" aria-live="polite">★ <b class="starCount">0</b></span></div>
+  <div class="top"><span class="homeBtns"><button class="pill hot" id="installBtn" hidden>📲 Instalar app</button><button class="pill" id="shareBtn">📤 Compartir</button></span><span class="stars" aria-live="polite">★ <b class="starCount">0</b> pts</span></div>
   <div class="hero">
     <svg viewBox="0 0 300 330" role="img" aria-label="Dayla como heroína estrella del K-pop">
       <defs>
@@ -229,6 +251,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
       <h1 class="logo"><span class="a">DAYLA'S</span><span class="b">BRAIN</span></h1>
       <p class="tag">Letras, trazos y números para pequeñas estrellas desde los 4 años.</p>
       <p class="hi">¡Hola, <b class="kidName">Dayla</b>! ¿Qué aprendemos hoy?</p>
+      <div class="rank">Nivel: <b id="rankName">Semilla 🌱</b> · <span id="rankNext"></span><div class="rankbar"><i id="rankBar" style="width:0"></i></div></div>
     </div>
   </div>
   <div class="worlds">
@@ -383,12 +406,13 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     <label for="nameInput">Nombre del niño o niña</label>
     <input id="nameInput" maxlength="20" value="Dayla">
     <div class="stat">
-      <span>Estrellas ganadas</span><span class="starCount">0</span>
-      <span>Aciertos en Leer</span><span id="sLeer">0</span>
-      <span>Palabras y oraciones logradas</span><span id="sPal">0</span>
-      <span>Trazos logrados</span><span id="sEsc">0</span>
-      <span>Aciertos en Números</span><span id="sNum">0</span>
+      <span>Puntaje total</span><span class="starCount">0</span>
+      <span>Nivel</span><span id="pRank">Semilla</span>
+      <span>Mejor racha</span><span id="pStreak">0</span>
+      <span>Rondas con 3 estrellas</span><span id="pPerfect">0</span>
     </div>
+    <div class="grades" id="gradeBox"></div>
+    <div class="row" style="justify-content:flex-start;margin-bottom:10px"><button class="btn" id="shareReport">📤 Compartir progreso</button></div>
     <p>Sesiones cortas de 10 a 15 minutos funcionan mejor a esta edad. Lean juntos en voz alta, celebren cada estrella y repasen las sílabas con palabras de la casa: mamá, papá, mesa, sopa.</p>
     <div class="row" style="justify-content:flex-start"><button class="btn ghost" id="resetBtn">Reiniciar progreso</button><span id="resetAsk" hidden> <button class="btn" id="resetYes">Sí, reiniciar</button></span></div>
   </div>
@@ -396,6 +420,15 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 
 </div>
 <button class="music" id="musicBtn" aria-label="Música de fondo">🎵</button>
+<div class="modal" id="roundModal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="mbox">
+    <div class="mstars" id="mStars"></div>
+    <h3 id="mTitle">¡Ronda completada!</h3>
+    <p class="mgrade" id="mGrade"></p>
+    <p class="mpts" id="mPts"></p>
+    <div class="row"><button class="btn ghost" id="mShare">📤 Compartir</button><button class="btn" id="mOk">Seguir jugando</button></div>
+  </div>
+</div>
 
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -403,14 +436,27 @@ const rnd=n=>Math.floor(Math.random()*n);
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
 
 /* ---------- Estado ---------- */
-let S={stars:0,leer:0,palabras:0,escribir:0,numeros:0,name:"Dayla"};
-try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s)S={...S,...s}}catch(e){}
+const AREAS=[["leer","Leer"],["palabras","Palabras"],["escribir","Escribir"],["numeros","Números"]];
+const zero=()=>({leer:0,palabras:0,escribir:0,numeros:0});
+const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"Dayla"});
+let S=newS();
+try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s){S={...S,...s};S.miss={...zero(),...(s.miss||{})};if(s.pts==null)S.pts=(s.stars||0)*10}}catch(e){}
+const RANKS=[[0,"Semilla 🌱"],[100,"Estrellita ⭐"],[300,"Cantante 🎤"],[600,"Estrella K-pop 🌟"],[1000,"Súper Estrella 💫"],[2000,"Leyenda 👑"]];
+const rankOf=p=>{let i=0;RANKS.forEach((r,j)=>{if(p>=r[0])i=j});return i};
+const gradeOf=a=>a>=.9?"Excelente":a>=.75?"Muy bien":a>=.6?"Bien":"Sigue practicando";
+const RS={};const R=a=>RS[a]||(RS[a]={rc:0,re:0,pts:0,miss:false});
 function save(){try{localStorage.setItem("daylasBrain",JSON.stringify(S))}catch(e){}}
 function render(){
-  $$(".starCount").forEach(e=>e.textContent=S.stars);
+  $$(".starCount").forEach(e=>e.textContent=S.pts);
+  const ri=rankOf(S.pts),nx=RANKS[ri+1];
+  $("#rankName").textContent=RANKS[ri][1];$("#pRank").textContent=RANKS[ri][1];
+  $("#rankNext").textContent=nx?`faltan ${nx[0]-S.pts} pts para ${nx[1]}`:"¡nivel máximo!";
+  $("#rankBar").style.width=(nx?Math.round((S.pts-RANKS[ri][0])/(nx[0]-RANKS[ri][0])*100):100)+"%";
+  $("#pStreak").textContent=S.best;$("#pPerfect").textContent=S.perfect;
+  $("#gradeBox").innerHTML='<span class="h">Área</span><span class="h">Aciertos</span><span class="h">%</span><span class="h">Nota</span>'+
+    AREAS.map(([k,n])=>{const h=S[k]||0,m=S.miss[k]||0,t=h+m,a=t?h/t:0;return `<span>${n}</span><span>${h}</span><span>${t?Math.round(a*100)+"%":"—"}</span><span class="g">${t?gradeOf(a):"—"}</span>`}).join("");
   $$(".kidName").forEach(e=>e.textContent=S.name||"campeón");
   [["leer",S.leer],["palabras",S.palabras],["escribir",S.escribir],["numeros",S.numeros]].forEach(([k,v])=>{const p=$(`[data-prog="${k}"]`);if(p)p.style.width=Math.min(100,v*4)+"%"});
-  $("#sLeer").textContent=S.leer;$("#sPal").textContent=S.palabras;$("#sEsc").textContent=S.escribir;$("#sNum").textContent=S.numeros;
 }
 
 /* ---------- Voz ---------- */
@@ -460,14 +506,57 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)mStop();els
 
 /* ---------- Premios ---------- */
 const cheers=["¡Muy bien!","¡Eres una estrella!","¡Genial!","¡Increíble!","¡Lo lograste!"];
+function miss(area){S.miss[area]=(S.miss[area]||0)+1;const r=R(area);if(!r.miss){r.miss=true;r.re++}S.streak=0;save();render()}
 function win(area,pre){
-  S.stars++;S[area]=(S[area]||0)+1;save();render();
-  const c=cheers[rnd(cheers.length)];say((pre?pre+". ":"")+c+" "+(S.name||""));
-  const p=document.createElement("div");p.className="party";p.innerHTML=`<div>★ ${c}</div>`;document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  const r=R(area),first=!r.miss,before=rankOf(S.pts);let gain=first?10:5,bonus="";
+  S.streak=first?S.streak+1:0;S.best=Math.max(S.best,S.streak);
+  if(S.streak&&S.streak%5===0){gain+=20;bonus=` ¡Racha de ${S.streak}! +20`}
+  S.pts+=gain;S.stars++;S[area]=(S[area]||0)+1;r.miss=false;r.rc++;r.pts+=gain;save();render();
+  const up=rankOf(S.pts)>before;
+  const c=up?"¡Subiste a "+RANKS[rankOf(S.pts)][1].replace(/\s\S+$/,"")+"!":cheers[rnd(cheers.length)];say((pre?pre+". ":"")+c+" "+(S.name||""));
+  const p=document.createElement("div");p.className="party";p.innerHTML=`<div>+${gain} ★ ${c}${bonus?"<br><small style='font-size:20px'>"+bonus+"</small>":""}</div>`;document.body.appendChild(p);setTimeout(()=>p.remove(),950);
+  if(r.rc>=5)setTimeout(()=>roundDone(area),1000);
   const cols=["#ff4fa3","#3fe0ff","#ffd23f","#5cf2a6","#fff"];
   for(let i=0;i<26;i++){const s=document.createElement("i");s.className="spark";s.style.left="50%";s.style.top="45%";s.style.background=cols[i%5];
     s.style.setProperty("--dx",(Math.random()*500-250)+"px");s.style.setProperty("--dy",(Math.random()*500-250)+"px");document.body.appendChild(s);setTimeout(()=>s.remove(),1150)}
 }
+
+/* ---------- Rondas, compartir, instalar ---------- */
+let lastShare="";
+function roundDone(area){
+  const r=R(area),st=r.re===0?3:r.re<=2?2:1,name=AREAS.find(a=>a[0]===area)[1];
+  if(st===3)S.perfect++;save();render();
+  const grade=st===3?"Excelente":st===2?"Muy bien":"Bien, sigue practicando";
+  $("#mStars").innerHTML=[0,1,2].map(i=>`<span class="${i<st?"":"off"}">★</span>`).join("");
+  $("#mTitle").textContent=`¡Ronda de ${name} completada!`;$("#mGrade").textContent=grade;
+  $("#mPts").textContent=`${r.pts} puntos en esta ronda · ${r.re} ${r.re===1?"error":"errores"} · Total: ${S.pts} pts`;
+  lastShare=`🌟 ${S.name||"Mi peque"} completó una ronda de ${name} en Dayla's Brain con ${"★".repeat(st)} (${grade}) y ya lleva ${S.pts} puntos. ¡Aprende a leer, escribir y contar jugando!`;
+  RS[area]={rc:0,re:0,pts:0,miss:false};
+  $("#roundModal").hidden=false;say(`Ronda completada. ${st} estrellas. ${grade}`);$("#mOk").focus();
+}
+$("#mOk").onclick=()=>$("#roundModal").hidden=true;
+const APP_URL=/^https?:$/.test(location.protocol)&&!/claude\.ai|claudeusercontent|claude\.site/.test(location.hostname)?location.origin+location.pathname:"https://colompaygold-crypto.github.io/daylas-brain/";
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+async function share(text){
+  const data={title:"Dayla's Brain",text,url:APP_URL};
+  try{if(navigator.share){await navigator.share(data);return}}catch(e){if(e&&e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(text+" "+APP_URL);toast("Enlace copiado. Pégalo en WhatsApp o en un correo.")}catch(e){toast("Comparte este enlace: "+APP_URL)}
+}
+$("#mShare").onclick=()=>share(lastShare);
+$("#shareBtn").onclick=()=>share("Mira esta app para que los niños aprendan a leer, escribir y contar jugando 🌟");
+$("#shareReport").onclick=()=>share(`📚 Progreso de ${S.name||"mi peque"} en Dayla's Brain: ${S.pts} puntos, nivel ${RANKS[rankOf(S.pts)][1]}. `+AREAS.map(([k,n])=>{const h=S[k]||0,t=h+(S.miss[k]||0);return t?`${n}: ${gradeOf(h/t)}`:""}).filter(Boolean).join(" · "));
+let deferredInstall=null;
+const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;$("#installBtn").hidden=false});
+window.addEventListener("appinstalled",()=>{$("#installBtn").hidden=true;toast("¡App instalada! Búscala en tu pantalla de inicio.")});
+if(isIOS&&!standalone()&&APP_URL===location.origin+location.pathname)$("#installBtn").hidden=false;
+$("#installBtn").onclick=async()=>{
+  if(deferredInstall){deferredInstall.prompt();try{await deferredInstall.userChoice}catch(e){}deferredInstall=null;$("#installBtn").hidden=true}
+  else if(isIOS)toast("En Safari toca Compartir □↑ y luego «Agregar a inicio».");
+  else toast("Abre el menú ⋮ del navegador y elige «Instalar app».");
+};
+try{if("serviceWorker" in navigator&&APP_URL===location.origin+location.pathname)navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
 
 /* ---------- Navegación ---------- */
 function go(id){$$("section").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==="escribir")setTimeout(setupPad,30)}
@@ -493,7 +582,7 @@ function newFind(){
   $("#findTarget").textContent=ABC[findT][0];
   const box=$("#findOpts");box.innerHTML="";
   shuffle(pool.slice()).forEach(i=>{const b=document.createElement("button");b.className="opt";b.textContent=ABC[i][0];
-    b.onclick=()=>{if(i===findT){b.classList.add("ok");win("leer");setTimeout(newFind,1100)}else{b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Intenta otra vez")}};box.appendChild(b)});
+    b.onclick=()=>{if(i===findT){b.classList.add("ok");win("leer");setTimeout(newFind,1100)}else{miss("leer");b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Intenta otra vez")}};box.appendChild(b)});
 }
 $("#findSpeak").onclick=()=>say("¿Dónde está la letra "+ABC[findT][0]+"?");newFind();
 
@@ -552,8 +641,8 @@ $("#tCheck").onclick=()=>{
   for(let i=3;i<gd.length;i+=4*7){const a=gd[i]>60,b=ud[i]>60;if(a){g++;if(b)hit++}if(b){us++;if(!a)out++}}
   const cov=g?hit/g:0,spill=us?out/us:1;
   if(cov>.5&&spill<.72){$("#traceMsg").textContent="¡Trazo perfecto! Toca ▶ para la siguiente.";win("escribir")}
-  else if(cov<=.5){$("#traceMsg").textContent="Casi. Repasa toda la letra gris.";say("Casi. Repasa toda la letra")}
-  else{$("#traceMsg").textContent="Intenta quedarte dentro de la letra gris.";say("Intenta quedarte dentro de la letra")}
+  else if(cov<=.5){miss("escribir");$("#traceMsg").textContent="Casi. Repasa toda la letra gris.";say("Casi. Repasa toda la letra")}
+  else{miss("escribir");$("#traceMsg").textContent="Intenta quedarte dentro de la letra gris.";say("Intenta quedarte dentro de la letra")}
 };
 window.addEventListener("resize",()=>{if(!$("#escribir").hidden){const s=strokes;setupPad();strokes=[]}});
 
@@ -563,7 +652,7 @@ const NUMW=["cero","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nu
 function opts3(ans,max,box,area,next){
   const set=new Set([ans]);while(set.size<3){const v=Math.max(0,Math.min(max,ans+rnd(5)-2));set.add(v)}
   box.innerHTML="";shuffle([...set]).forEach(v=>{const b=document.createElement("button");b.className="opt";b.textContent=v;
-    b.onclick=()=>{if(v===ans){b.classList.add("ok");win(area);setTimeout(next,1100)}else{b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Cuenta otra vez")}};box.appendChild(b)});
+    b.onclick=()=>{if(v===ans){b.classList.add("ok");win(area);setTimeout(next,1100)}else{miss(area);b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Cuenta otra vez")}};box.appendChild(b)});
 }
 function newCount(){const n=1+rnd(10),o=OBJ[rnd(OBJ.length)];
   const box=$("#countItems");box.innerHTML="";for(let i=0;i<n;i++){const s=document.createElement("span");s.textContent=o;s.style.cursor="pointer";s.onclick=()=>say(NUMW[i+1]);box.appendChild(s)}
@@ -574,7 +663,7 @@ function newSum(){const a=1+rnd(5),b=1+rnd(Math.min(5,10-a)),o=OBJ[rnd(OBJ.lengt
   opts3(a+b,10,$("#sumOpts"),"numeros",newSum)}
 function newCmp(){let a=1+rnd(9),b=1+rnd(9);while(a===b)b=1+rnd(9);const o=OBJ[rnd(OBJ.length)];
   const row=$("#cmpRow");row.innerHTML="";[a,b].forEach(n=>{const btn=document.createElement("button");btn.textContent=o.repeat(n);
-    btn.onclick=()=>{if(n===Math.max(a,b)){btn.style.borderColor="var(--mint)";win("numeros");setTimeout(newCmp,1100)}else{btn.style.borderColor="#ff6b6b";say("Ese grupo tiene menos. Cuenta otra vez")}};row.appendChild(btn)})}
+    btn.onclick=()=>{if(n===Math.max(a,b)){btn.style.borderColor="var(--mint)";win("numeros");setTimeout(newCmp,1100)}else{miss("numeros");btn.style.borderColor="#ff6b6b";say("Ese grupo tiene menos. Cuenta otra vez")}};row.appendChild(btn)})}
 newCount();newSum();newCmp();
 
 /* ---------- PALABRAS ---------- */
@@ -592,7 +681,7 @@ function tileGame(slotsEl,tilesEl,parts,extras,small,onDone){
   shuffle([...parts,...extras]).forEach(t=>{const b=document.createElement("button");b.className="tile";b.textContent=t;
     b.onclick=()=>{if(pos>=parts.length)return;
       if(t===parts[pos]){slots[pos].textContent=t;slots[pos].classList.add("f");b.disabled=true;pos++;if(pos===parts.length)onDone();else say(t.replace(".",""))}
-      else{b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Esa no va. Intenta otra")}};
+      else{miss("palabras");b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Esa no va. Intenta otra")}};
     tilesEl.appendChild(b)});
 }
 
@@ -609,7 +698,7 @@ function mixUpd(talk){
   const list=WORDS.filter(w=>syls(w).some(x=>norm(x)===syl)).map(plain);
   $("#mixWords").textContent=list.length?`Palabras con ${syl}: ${list.slice(0,4).join(", ")}`:`Escucha cómo suena ${syl}`;
   if(!talk)return;
-  if(mixT){if(syl===mixT){$("#mixMsg").textContent="¡Esa es! ★";win("palabras",syl);mixT=null}else say(syl+". Esa no es. Escucha: "+mixT)}
+  if(mixT){if(syl===mixT){$("#mixMsg").textContent="¡Esa es! ★";win("palabras",syl);mixT=null}else{miss("palabras");say(syl+". Esa no es. Escucha: "+mixT)}}
   else say(syl);
 }
 const mixPool=[...new Set(WORDS.flatMap(syls).map(norm))].filter(s=>s.length===2&&MC.includes(s[0].toUpperCase())&&MV.includes(s[1].toUpperCase()));
@@ -630,7 +719,7 @@ let rW;
 function newRead(){const l=shuffle(WORDS.filter(w=>syls(w).length===palLvl&&w!==rW)).slice(0,3);rW=l[0];
   $("#rWord").textContent=plain(rW);const box=$("#rPics");box.innerHTML="";
   shuffle(l.slice()).forEach(w=>{const b=document.createElement("button");b.textContent=w[1];b.setAttribute("aria-label","Dibujo "+(box.children.length+1));
-    b.onclick=()=>{if(w===rW){b.style.borderColor="var(--mint)";win("palabras",plain(rW));setTimeout(newRead,1500)}else{b.style.borderColor="#ff6b6b";say("Lee otra vez")}};box.appendChild(b)})}
+    b.onclick=()=>{if(w===rW){b.style.borderColor="var(--mint)";win("palabras",plain(rW));setTimeout(newRead,1500)}else{miss("palabras");b.style.borderColor="#ff6b6b";say("Lee otra vez")}};box.appendChild(b)})}
 $("#rWord").onclick=()=>say(syls(rW).join("... ")+"... "+plain(rW));
 
 /* Escribe letra por letra */
@@ -656,6 +745,6 @@ $("#musicBtn").onclick=()=>{if(M.on&&!M.timer){mStart();return}M.on=!M.on;try{lo
 $("#nameInput").value=S.name;
 $("#nameInput").addEventListener("input",e=>{S.name=e.target.value.trim();save();render()});
 $("#resetBtn").onclick=()=>$("#resetAsk").hidden=false;
-$("#resetYes").onclick=()=>{S={stars:0,leer:0,palabras:0,escribir:0,numeros:0,name:S.name};save();render();$("#resetAsk").hidden=true};
+$("#resetYes").onclick=()=>{S=newS(S.name);save();render();$("#resetAsk").hidden=true};
 render();
 </script>
