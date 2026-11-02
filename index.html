@@ -53,6 +53,13 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .world{border-radius:26px;padding:16px 16px 16px 16px;min-height:108px;display:flex;align-items:center;gap:16px;text-align:left;position:relative;overflow:hidden;transition:transform .15s;box-shadow:0 10px 26px #0006,inset 0 1px 0 #ffffff50}
 .world::before{content:"";position:absolute;right:-34px;top:-46px;width:140px;height:140px;border-radius:50%;background:#ffffff18;pointer-events:none}
 .world::after{content:"";position:absolute;right:46px;bottom:-60px;width:90px;height:90px;border-radius:50%;background:#ffffff10;pointer-events:none}
+.world .shine{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;border-radius:inherit}
+.world .shine::before{content:"";position:absolute;top:-30%;bottom:-30%;left:0;width:34%;
+  background:linear-gradient(100deg,transparent 0%,rgba(255,200,60,0) 18%,rgba(255,210,80,.45) 40%,rgba(255,248,200,.95) 50%,rgba(255,210,80,.45) 60%,rgba(255,200,60,0) 82%,transparent 100%);
+  transform:translateX(-160%) skewX(-20deg);animation:sweep 6s cubic-bezier(.45,.1,.55,.9) infinite;animation-delay:var(--d,0s);mix-blend-mode:screen}
+.world .shine::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 2px rgba(255,215,90,0);animation:rim 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes sweep{0%{transform:translateX(-160%) skewX(-20deg)}20%{transform:translateX(360%) skewX(-20deg)}100%{transform:translateX(360%) skewX(-20deg)}}
+@keyframes rim{0%{box-shadow:inset 0 0 0 2px rgba(255,215,90,0)}10%{box-shadow:inset 0 0 0 2px rgba(255,215,90,.85),0 0 0 0 transparent}20%,100%{box-shadow:inset 0 0 0 2px rgba(255,215,90,0)}}
 .world:hover{transform:translateY(-3px)}
 .world:active{transform:scale(.98)}
 .world .big{flex:0 0 74px;height:74px;border-radius:22px;background:#ffffff30;box-shadow:inset 0 0 0 2px #ffffff45,0 6px 14px #0003;display:grid;place-items:center;font-family:var(--letter);font-weight:700;font-size:34px;line-height:1;letter-spacing:-.5px;position:relative;z-index:1}
@@ -307,11 +314,11 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     </div>
   </div>
   <div class="worlds">
-    <button class="world w-leer" data-go="leer"><span class="big" aria-hidden="true">Aa</span><span class="txt"><span class="name">Leer</span><span class="sub">Letras y sílabas</span><span class="prog"><i data-prog="leer"></i></span></span><span class="go" aria-hidden="true">›</span></button>
-    <button class="world w-pal" data-go="palabras"><span class="badge">NUEVO</span><span class="big" aria-hidden="true">ma+sa</span><span class="txt"><span class="name">Palabras</span><span class="sub">Arma, lee y escribe</span><span class="prog"><i data-prog="palabras"></i></span></span><span class="go" aria-hidden="true">›</span></button>
-    <button class="world w-escribir" data-go="escribir"><span class="big" aria-hidden="true">✎</span><span class="txt"><span class="name">Escribir</span><span class="sub">Traza con el dedo</span><span class="prog"><i data-prog="escribir"></i></span></span><span class="go" aria-hidden="true">›</span></button>
-    <button class="world w-num" data-go="numeros"><span class="big" aria-hidden="true">123</span><span class="txt"><span class="name">Números</span><span class="sub">Contar y sumar</span><span class="prog"><i data-prog="numeros"></i></span></span><span class="go" aria-hidden="true">›</span></button>
-    <button class="world w-eng" data-go="ingles"><span class="badge">NEW</span><span class="big" aria-hidden="true">ABC</span><span class="txt"><span class="name">English</span><span class="sub">Inglés · sonidos, palabras y oraciones</span><span class="prog"><i data-prog="ingles"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-leer" data-go="leer"><span class="shine" style="--d:0.0s" aria-hidden="true"></span><span class="big" aria-hidden="true">Aa</span><span class="txt"><span class="name">Leer</span><span class="sub">Letras y sílabas</span><span class="prog"><i data-prog="leer"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-pal" data-go="palabras"><span class="shine" style="--d:1.2s" aria-hidden="true"></span><span class="badge">NUEVO</span><span class="big" aria-hidden="true">ma+sa</span><span class="txt"><span class="name">Palabras</span><span class="sub">Arma, lee y escribe</span><span class="prog"><i data-prog="palabras"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-escribir" data-go="escribir"><span class="shine" style="--d:2.4s" aria-hidden="true"></span><span class="big" aria-hidden="true">✎</span><span class="txt"><span class="name">Escribir</span><span class="sub">Traza con el dedo</span><span class="prog"><i data-prog="escribir"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-num" data-go="numeros"><span class="shine" style="--d:3.6s" aria-hidden="true"></span><span class="big" aria-hidden="true">123</span><span class="txt"><span class="name">Números</span><span class="sub">Contar y sumar</span><span class="prog"><i data-prog="numeros"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-eng" data-go="ingles"><span class="shine" style="--d:4.8s" aria-hidden="true"></span><span class="badge">NEW</span><span class="big" aria-hidden="true">ABC</span><span class="txt"><span class="name">English</span><span class="sub">Inglés · sonidos, palabras y oraciones</span><span class="prog"><i data-prog="ingles"></i></span></span><span class="go" aria-hidden="true">›</span></button>
   </div>
   <div class="parents"><button data-go="padres">Zona de papás</button></div>
   <p class="firma">BY CARLOS BERBESI 2026</p>
