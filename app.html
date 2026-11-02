@@ -123,6 +123,22 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .lvl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;color:var(--soft);align-items:center;font-size:16px}
 @media (max-width:560px){.tile{font-size:26px;padding:10px 14px;min-width:52px}.slot{min-width:60px;height:66px;font-size:32px}.slot.sm{min-width:38px;height:54px;font-size:26px}.pics button{font-size:48px}.bigpic{font-size:80px}}
 
+/* English */
+.w-eng{grid-column:1/-1;background:linear-gradient(120deg,#7a3cff,#3fe0ff)}
+.w-eng .big{font-size:48px}
+.cats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+.cats button{background:var(--stage2);border-radius:999px;padding:8px 14px;font-weight:600;font-size:16px;border:2px solid transparent}
+.cats button.on{background:var(--cyan);color:var(--night)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.vcard{background:var(--stage2);border-radius:22px;padding:12px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;border:3px solid transparent}
+.vcard:hover,.vcard.on{border-color:var(--cyan)}
+.vcard .e{font-size:46px;line-height:1.1}
+.vcard .en{font-family:var(--letter);font-weight:700;font-size:22px}
+.vcard .es{font-size:14px;color:var(--soft)}
+.trans{text-align:center;color:var(--soft);font-size:18px;margin:4px 0 0;min-height:1.4em}
+.trans b{color:var(--cyan)}
+.phon .L{color:var(--cyan)}
+
 /* Puntaje, rango, compartir, instalar */
 .homeBtns{display:flex;gap:8px;flex-wrap:wrap}
 .pill{background:var(--stage2);border:2px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:600;font-size:15px}
@@ -259,6 +275,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     <button class="world w-pal" data-go="palabras"><span class="badge">NUEVO</span><span class="big">ma+sa</span><span><span class="name">Palabras</span><br><span class="sub">Arma, lee y escribe</span></span><span class="prog"><i data-prog="palabras"></i></span></button>
     <button class="world w-escribir" data-go="escribir"><span class="big">✎</span><span><span class="name">Escribir</span><br><span class="sub">Traza con el dedo</span></span><span class="prog"><i data-prog="escribir"></i></span></button>
     <button class="world w-num" data-go="numeros"><span class="big">123</span><span><span class="name">Números</span><br><span class="sub">Contar y sumar</span></span><span class="prog"><i data-prog="numeros"></i></span></button>
+    <button class="world w-eng" data-go="ingles"><span class="badge">NEW</span><span class="big">ABC</span><span><span class="name">English</span><br><span class="sub">Phonics, words & sentences · Inglés</span></span><span class="prog"><i data-prog="ingles"></i></span></button>
   </div>
   <div class="parents"><button data-go="padres">Zona de papás</button></div>
 </section>
@@ -350,6 +367,58 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
   </div>
 </section>
 
+<!-- ============ ENGLISH ============ -->
+<section id="ingles" hidden>
+  <div class="top"><button class="back" data-go="home">← Inicio</button><span class="stars">★ <b class="starCount">0</b></span></div>
+  <h2 class="title">English <span style="color:var(--soft);font-size:20px">· Inglés</span></h2>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="eng-abc" aria-selected="true">ABC Phonics</button>
+    <button class="tab" role="tab" data-tab="eng-words" aria-selected="false">Words · Palabras</button>
+    <button class="tab" role="tab" data-tab="eng-listen" aria-selected="false">Listen · Escucha</button>
+    <button class="tab" role="tab" data-tab="eng-spell" aria-selected="false">Spell · Deletrea</button>
+    <button class="tab" role="tab" data-tab="eng-sent" aria-selected="false">Sentences · Oraciones</button>
+  </div>
+
+  <div class="panel phon" id="eng-abc">
+    <div class="card"><div class="L" id="eL">A<small>a</small></div><div><div class="pic" id="ePic">🍎</div><div class="word" id="eWord"><u>A</u>pple</div><div class="trans" id="eEs">manzana</div></div></div>
+    <p class="q" id="eSays" style="font-size:22px">A is for apple</p>
+    <div class="center" style="margin-bottom:16px"><button class="speak" id="eSay">🔊 Listen</button></div>
+    <div class="abc" id="eGrid"></div>
+  </div>
+
+  <div class="panel" id="eng-words" hidden>
+    <div class="cats" id="vCats"></div>
+    <div class="vgrid" id="vGrid"></div>
+    <p class="hint" style="margin-top:12px">Toca cada dibujo: lo oyes en inglés y luego en español.</p>
+  </div>
+
+  <div class="panel" id="eng-listen" hidden>
+    <p class="q">Listen and touch the picture<br><span style="font-size:17px;color:var(--soft)">Escucha y toca el dibujo</span></p>
+    <div class="center"><button class="speak" id="lSay">🔊 Listen again</button></div>
+    <div class="pics" id="lPics"></div>
+    <p class="trans" id="lTrans"></p>
+  </div>
+
+  <div class="panel" id="eng-spell" hidden>
+    <p class="q">Spell the word · Deletrea la palabra</p>
+    <div class="bigpic" id="xPic"></div>
+    <div class="center"><button class="speak" id="xSay">🔊 Listen</button></div>
+    <div class="slots" id="xSlots"></div>
+    <div class="tiles" id="xTiles"></div>
+    <div class="row"><button class="btn ghost" id="xSkip">Next word ▶</button></div>
+  </div>
+
+  <div class="panel" id="eng-sent" hidden>
+    <p class="q">Build the sentence · Forma la oración</p>
+    <div class="bigpic" id="ySPic"></div>
+    <div class="center"><button class="speak" id="ySay">🔊 Listen</button></div>
+    <p class="trans" id="yTrans"></p>
+    <div class="slots" id="ySlots"></div>
+    <div class="tiles" id="yTiles"></div>
+    <div class="row"><button class="btn ghost" id="yRedo">Start again</button><button class="btn ghost" id="ySkip">Next ▶</button></div>
+  </div>
+</section>
+
 <!-- ============ ESCRIBIR ============ -->
 <section id="escribir" hidden>
   <div class="top"><button class="back" data-go="home">← Inicio</button><span class="stars">★ <b class="starCount">0</b></span></div>
@@ -436,9 +505,9 @@ const rnd=n=>Math.floor(Math.random()*n);
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
 
 /* ---------- Estado ---------- */
-const AREAS=[["leer","Leer"],["palabras","Palabras"],["escribir","Escribir"],["numeros","Números"]];
-const zero=()=>({leer:0,palabras:0,escribir:0,numeros:0});
-const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"Dayla"});
+const AREAS=[["leer","Leer"],["palabras","Palabras"],["escribir","Escribir"],["numeros","Números"],["ingles","English"]];
+const zero=()=>({leer:0,palabras:0,escribir:0,numeros:0,ingles:0});
+const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,ingles:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"Dayla"});
 let S=newS();
 try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s){S={...S,...s};S.miss={...zero(),...(s.miss||{})};if(s.pts==null)S.pts=(s.stars||0)*10}}catch(e){}
 const RANKS=[[0,"Semilla 🌱"],[100,"Estrellita ⭐"],[300,"Cantante 🎤"],[600,"Estrella K-pop 🌟"],[1000,"Súper Estrella 💫"],[2000,"Leyenda 👑"]];
@@ -456,15 +525,18 @@ function render(){
   $("#gradeBox").innerHTML='<span class="h">Área</span><span class="h">Aciertos</span><span class="h">%</span><span class="h">Nota</span>'+
     AREAS.map(([k,n])=>{const h=S[k]||0,m=S.miss[k]||0,t=h+m,a=t?h/t:0;return `<span>${n}</span><span>${h}</span><span>${t?Math.round(a*100)+"%":"—"}</span><span class="g">${t?gradeOf(a):"—"}</span>`}).join("");
   $$(".kidName").forEach(e=>e.textContent=S.name||"campeón");
-  [["leer",S.leer],["palabras",S.palabras],["escribir",S.escribir],["numeros",S.numeros]].forEach(([k,v])=>{const p=$(`[data-prog="${k}"]`);if(p)p.style.width=Math.min(100,v*4)+"%"});
+  [["leer",S.leer],["palabras",S.palabras],["escribir",S.escribir],["numeros",S.numeros],["ingles",S.ingles||0]].forEach(([k,v])=>{const p=$(`[data-prog="${k}"]`);if(p)p.style.width=Math.min(100,v*4)+"%"});
 }
 
 /* ---------- Voz ---------- */
-let voice=null;
-function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/es[-_](CO|MX|US|419)/i.test(x.lang))||v.find(x=>/^es/i.test(x.lang))||null}catch(e){}}
+let voice=null,enVoice=null;
+function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/es[-_](CO|MX|US|419)/i.test(x.lang))||v.find(x=>/^es/i.test(x.lang))||null;
+  enVoice=v.find(x=>/en[-_]US/i.test(x.lang)&&/female|samantha|google us/i.test(x.name))||v.find(x=>/en[-_]US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}}
 try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
-function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=voice?voice.lang:"es-ES";if(voice)u.voice=voice;u.rate=.85;u.pitch=1.15;
+function speak(t,lang,queue){try{if(!queue)speechSynthesis.cancel();const en=lang==="en",vv=en?enVoice:voice;const u=new SpeechSynthesisUtterance(t);
+  u.lang=vv?vv.lang:(en?"en-US":"es-ES");if(vv)u.voice=vv;u.rate=en?.8:.85;u.pitch=1.15;
   u.onstart=()=>duck(true);u.onend=u.onerror=()=>duck(false);speechSynthesis.speak(u)}catch(e){}}
+const say=t=>speak(t,"es"), sayEn=t=>speak(t,"en");
 
 /* ---------- Música de fondo (original, generada en vivo) ---------- */
 const M={ctx:null,out:null,on:true,timer:null,next:0,step:0,noise:null,ducked:false};
@@ -507,13 +579,14 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)mStop();els
 /* ---------- Premios ---------- */
 const cheers=["¡Muy bien!","¡Eres una estrella!","¡Genial!","¡Increíble!","¡Lo lograste!"];
 function miss(area){S.miss[area]=(S.miss[area]||0)+1;const r=R(area);if(!r.miss){r.miss=true;r.re++}S.streak=0;save();render()}
-function win(area,pre){
+function win(area,pre,en){
   const r=R(area),first=!r.miss,before=rankOf(S.pts);let gain=first?10:5,bonus="";
   S.streak=first?S.streak+1:0;S.best=Math.max(S.best,S.streak);
   if(S.streak&&S.streak%5===0){gain+=20;bonus=` ¡Racha de ${S.streak}! +20`}
   S.pts+=gain;S.stars++;S[area]=(S[area]||0)+1;r.miss=false;r.rc++;r.pts+=gain;save();render();
   const up=rankOf(S.pts)>before;
-  const c=up?"¡Subiste a "+RANKS[rankOf(S.pts)][1].replace(/\s\S+$/,"")+"!":cheers[rnd(cheers.length)];say((pre?pre+". ":"")+c+" "+(S.name||""));
+  const c=up?"¡Subiste a "+RANKS[rankOf(S.pts)][1].replace(/\s\S+$/,"")+"!":cheers[rnd(cheers.length)];
+  if(en&&pre){sayEn(pre+". Great job!");speak(c+" "+(S.name||""),"es",true)}else say((pre?pre+". ":"")+c+" "+(S.name||""));
   const p=document.createElement("div");p.className="party";p.innerHTML=`<div>+${gain} ★ ${c}${bonus?"<br><small style='font-size:20px'>"+bonus+"</small>":""}</div>`;document.body.appendChild(p);setTimeout(()=>p.remove(),950);
   if(r.rc>=5)setTimeout(()=>roundDone(area),1000);
   const cols=["#ff4fa3","#3fe0ff","#ffd23f","#5cf2a6","#fff"];
@@ -675,13 +748,13 @@ const syls=w=>w[0].split("-"), plain=w=>w[0].replace(/-/g,"");
 let palLvl=2;
 const pickWord=prev=>{const l=WORDS.filter(w=>syls(w).length===palLvl&&w!==prev);return l[rnd(l.length)]};
 
-function tileGame(slotsEl,tilesEl,parts,extras,small,onDone){
+function tileGame(slotsEl,tilesEl,parts,extras,small,onDone,area,sp){area=area||"palabras";sp=sp||say;
   slotsEl.innerHTML="";tilesEl.innerHTML="";let pos=0;
   const slots=parts.map(()=>{const d=document.createElement("div");d.className="slot"+(small?" sm":"");slotsEl.appendChild(d);return d});
   shuffle([...parts,...extras]).forEach(t=>{const b=document.createElement("button");b.className="tile";b.textContent=t;
     b.onclick=()=>{if(pos>=parts.length)return;
-      if(t===parts[pos]){slots[pos].textContent=t;slots[pos].classList.add("f");b.disabled=true;pos++;if(pos===parts.length)onDone();else say(t.replace(".",""))}
-      else{miss("palabras");b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Esa no va. Intenta otra")}};
+      if(t===parts[pos]){slots[pos].textContent=t;slots[pos].classList.add("f");b.disabled=true;pos++;if(pos===parts.length)onDone();else sp(t.replace(/[.,]/g,""))}
+      else{miss(area);b.classList.remove("no");void b.offsetWidth;b.classList.add("no");sp===say?say("Esa no va. Intenta otra"):sayEn("Try again")}};
     tilesEl.appendChild(b)});
 }
 
@@ -739,6 +812,56 @@ $("#tSay").onclick=()=>say(tS[0]);$("#tRedo").onclick=()=>newSent(true);$("#tSki
 
 $$("[data-lvl]").forEach(t=>t.addEventListener("click",()=>{$$("[data-lvl]").forEach(x=>x.setAttribute("aria-selected",x===t));palLvl=+t.dataset.lvl;newBuild();newRead();newSpell(true===false)}));
 newBuild();newRead();sW=pickWord();newSpell(true);newSent();
+
+/* ---------- ENGLISH ---------- */
+const EABC=[["A","apple","🍎","manzana"],["B","ball","⚽","pelota"],["C","cat","🐱","gato"],["D","dog","🐶","perro"],["E","egg","🥚","huevo"],["F","fish","🐟","pez"],["G","goat","🐐","cabra"],["H","hat","🎩","sombrero"],["I","insect","🐞","insecto"],["J","juice","🧃","jugo"],["K","kite","🪁","cometa"],["L","lion","🦁","león"],["M","moon","🌙","luna"],["N","nest","🪺","nido"],["O","octopus","🐙","pulpo"],["P","pig","🐷","cerdito"],["Q","queen","👑","reina"],["R","rabbit","🐰","conejo"],["S","sun","☀️","sol"],["T","tiger","🐯","tigre"],["U","umbrella","☂️","paraguas"],["V","van","🚐","camioneta"],["W","whale","🐳","ballena"],["X","fox","🦊","zorro"],["Y","yo-yo","🪀","yoyo"],["Z","zebra","🦓","cebra"]];
+let ei=0;
+function showE(i){ei=i;const [L,w,e,es]=EABC[i];$("#eL").innerHTML=`${L}<small>${L.toLowerCase()}</small>`;$("#ePic").textContent=e;
+  const k=w.toLowerCase().indexOf(L.toLowerCase());$("#eWord").innerHTML=k===0?`<u>${w[0].toUpperCase()}</u>${w.slice(1)}`:`${w.slice(0,k)}<u>${w[k]}</u>${w.slice(k+1)}`;
+  $("#eEs").textContent=es;$("#eSays").textContent=L==="X"?"X is in fox":`${L} is for ${w}`;$$("#eGrid .key").forEach((b,j)=>b.classList.toggle("on",j===i))}
+function sayE(){const [L,w,,es]=EABC[ei];sayEn(L==="X"?`X. X is in fox. Fox.`:`${L}. ${L} is for ${w}. ${w}.`);speak(es,"es",true)}
+EABC.forEach(([L],i)=>{const b=document.createElement("button");b.className="key";b.textContent=L;b.onclick=()=>{showE(i);sayE()};$("#eGrid").appendChild(b)});
+$("#eSay").onclick=sayE;showE(0);
+
+const VOC={
+  "Colors · Colores":[["red","🔴","rojo"],["blue","🔵","azul"],["yellow","🟡","amarillo"],["green","🟢","verde"],["orange","🟠","naranja"],["purple","🟣","morado"],["pink","🩷","rosado"],["brown","🟤","café"],["black","⚫","negro"],["white","⚪","blanco"]],
+  "Animals · Animales":[["cat","🐱","gato"],["dog","🐶","perro"],["bird","🐦","pájaro"],["fish","🐟","pez"],["cow","🐮","vaca"],["horse","🐴","caballo"],["duck","🦆","pato"],["frog","🐸","rana"],["bear","🐻","oso"],["lion","🦁","león"]],
+  "Numbers · Números":[["one","1️⃣","uno"],["two","2️⃣","dos"],["three","3️⃣","tres"],["four","4️⃣","cuatro"],["five","5️⃣","cinco"],["six","6️⃣","seis"],["seven","7️⃣","siete"],["eight","8️⃣","ocho"],["nine","9️⃣","nueve"],["ten","🔟","diez"]],
+  "Family · Familia":[["mom","👩","mamá"],["dad","👨","papá"],["baby","👶","bebé"],["sister","👧","hermana"],["brother","👦","hermano"],["grandma","👵","abuela"],["grandpa","👴","abuelo"]],
+  "Body · Cuerpo":[["hand","✋","mano"],["eye","👁️","ojo"],["ear","👂","oreja"],["nose","👃","nariz"],["mouth","👄","boca"],["foot","🦶","pie"],["tooth","🦷","diente"]],
+  "Food · Comida":[["apple","🍎","manzana"],["banana","🍌","banano"],["milk","🥛","leche"],["bread","🍞","pan"],["egg","🥚","huevo"],["water","💧","agua"],["cake","🎂","pastel"],["juice","🧃","jugo"]]
+};
+let vcat=Object.keys(VOC)[0];
+function showCat(c){vcat=c;$$("#vCats button").forEach(b=>b.classList.toggle("on",b.textContent===c));const g=$("#vGrid");g.innerHTML="";
+  VOC[c].forEach(([en,e,es])=>{const b=document.createElement("button");b.className="vcard";b.innerHTML=`<span class="e">${e}</span><span class="en">${en}</span><span class="es">${es}</span>`;
+    b.onclick=()=>{$$("#vGrid .vcard").forEach(x=>x.classList.toggle("on",x===b));sayEn(en);speak(es,"es",true)};g.appendChild(b)})}
+Object.keys(VOC).forEach(c=>{const b=document.createElement("button");b.textContent=c;b.onclick=()=>showCat(c);$("#vCats").appendChild(b)});showCat(vcat);
+
+const ALLV=[].concat(...Object.values(VOC)).filter((v,i,a)=>a.findIndex(x=>x[0]===v[0])===i);
+let lW;
+function newListen(){const pool=shuffle(ALLV.filter(v=>v!==lW)).slice(0,3);lW=pool[0];$("#lTrans").innerHTML="";
+  const box=$("#lPics");box.innerHTML="";
+  shuffle(pool.slice()).forEach(v=>{const b=document.createElement("button");b.textContent=v[1];b.setAttribute("aria-label","Picture "+(box.children.length+1));
+    b.onclick=()=>{if(v===lW){b.style.borderColor="var(--mint)";$("#lTrans").innerHTML=`<b>${v[0]}</b> = ${v[2]}`;win("ingles",v[0],true);setTimeout(newListen,1900)}
+      else{miss("ingles");b.style.borderColor="#ff6b6b";sayEn("Try again. "+lW[0])}};box.appendChild(b)});
+  setTimeout(()=>{if(!$("#ingles").hidden&&!$("#eng-listen").hidden)sayEn(lW[0])},300)}
+$("#lSay").onclick=()=>sayEn(lW[0]);
+$$('[data-tab="eng-listen"]').forEach(t=>t.addEventListener("click",()=>setTimeout(()=>sayEn(lW[0]),200)));
+
+const CVC=[["cat","🐱","gato"],["dog","🐶","perro"],["sun","☀️","sol"],["pig","🐷","cerdito"],["hat","🎩","sombrero"],["bus","🚌","bus"],["bed","🛏️","cama"],["fox","🦊","zorro"],["cup","🥤","vaso"],["bat","🦇","murciélago"],["hen","🐔","gallina"],["box","📦","caja"],["bug","🐛","bicho"],["map","🗺️","mapa"],["ant","🐜","hormiga"],["egg","🥚","huevo"]];
+let xW;
+function newSpellEn(){let n;do{n=CVC[rnd(CVC.length)]}while(n===xW);xW=n;$("#xPic").textContent=xW[1];const letters=[...xW[0]];
+  const ex=shuffle("abcdefghilmnoprstu".split("").filter(c=>!letters.includes(c))).slice(0,3);
+  tileGame($("#xSlots"),$("#xTiles"),letters,ex,true,()=>{win("ingles",letters.join(", ")+". "+xW[0],true);setTimeout(newSpellEn,2200)},"ingles",sayEn)}
+$("#xSay").onclick=()=>sayEn(xW[0]);$("#xSkip").onclick=newSpellEn;newSpellEn();
+
+const ESENT=[["I see a cat","👀🐱","Veo un gato"],["The dog is big","🐶","El perro es grande"],["I like red","❤️","Me gusta el rojo"],["I love my mom","👩💕","Amo a mi mamá"],["The sun is hot","☀️","El sol está caliente"],["I have a ball","⚽","Tengo una pelota"],["My name is Dayla","👧","Me llamo Dayla"],["I can jump","🤸","Puedo saltar"],["The fish can swim","🐟","El pez puede nadar"],["I am happy","😊","Estoy feliz"],["Good morning, Dad","👨☀️","Buenos días, papá"],["I like to read","📖","Me gusta leer"]];
+let yS;
+function newSentEn(keep){if(!keep){let n;do{n=ESENT[rnd(ESENT.length)]}while(n===yS);yS=n}
+  $("#ySPic").textContent=yS[1];$("#yTrans").textContent=yS[2];const p=yS[0].split(" ");p[p.length-1]+=".";
+  tileGame($("#ySlots"),$("#yTiles"),p,[],true,()=>{win("ingles",yS[0],true);setTimeout(()=>newSentEn(),2400)},"ingles",sayEn)}
+$("#ySay").onclick=()=>sayEn(yS[0]);$("#yRedo").onclick=()=>newSentEn(true);$("#ySkip").onclick=()=>newSentEn();newSentEn();
+newListen();
 
 /* ---------- PADRES ---------- */
 $("#musicBtn").onclick=()=>{if(M.on&&!M.timer){mStart();return}M.on=!M.on;try{localStorage.setItem("dbMusic",M.on?"1":"0")}catch(e){}if(M.on)mStart();else mStop()};mBtn();
