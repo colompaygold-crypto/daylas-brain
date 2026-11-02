@@ -971,40 +971,51 @@ newListen();
 /* ---------- MINI TUTORIALES (la primera vez en cada juego) ---------- */
 const byText=(sel,txt)=>[...$$(sel)].find(b=>b.textContent===txt);
 const TUT={
-  "leer-abc":()=>[{t:"Toca la letra A que está brillando para escucharla.",el:()=>$("#abcGrid .key")},{t:"¡Muy bien! Toca Escuchar para oírla otra vez.",el:()=>$("#abcSpeak")},{t:"Ahora toca otras letras y aprende sus palabras."}],
-  "leer-find":()=>[{t:`Escucha la letra y busca la igual. Es la ${ABC[findT][0]}. Tócala.`,el:()=>byText("#findOpts .opt",ABC[findT][0])},{t:"¡Así se hace! Ahora sigue tú solito."}],
-  "leer-syl":()=>[{t:"Toca la sílaba que brilla para escuchar cómo suena.",el:()=>$("#sylRow button")},{t:"Ahora elige otra letra y escucha sus sílabas.",el:()=>$$("#consRow button")[1]},{t:"¡Excelente! Sigue explorando las sílabas."}],
-  "pal-mix":()=>[{t:"Toca una consonante. Prueba con la P.",el:()=>byText("#mixC button","P")},{t:"Ahora toca una vocal. Prueba con la A.",el:()=>byText("#mixV button","A")},{t:"¡P con A dice PA! Prueba otras combinaciones."}],
-  "pal-build":()=>syls(bW).map((sy,i)=>({t:i?`Ahora toca ${sy}.`:`Mira el dibujo y arma su nombre con sílabas. Toca primero ${sy}.`,el:()=>byText("#bTiles .tile:not([disabled])",sy)})).concat([{t:"¡Lo lograste! Ahora arma las demás tú solito."}]),
-  "pal-read":()=>[{t:"Toca la palabra para escucharla despacito.",el:()=>$("#rWord")},{t:"Ahora toca su dibujo.",el:()=>byText("#rPics button",rW[1])}],
-  "pal-spell":()=>[...plain(sW)].slice(0,2).map((c,i)=>({t:i?`Después va la ${c}.`:`Escribe la palabra letra por letra. Empieza con la ${c}.`,el:()=>byText("#sTiles .tile:not([disabled])",c)})).concat([{t:"¡Muy bien! Termina la palabra tú solito."}]),
-  "pal-sent":()=>{const p=NM(tS[0]).split(/\s+/);p[p.length-1]+=".";return p.slice(0,2).map((w,i)=>({t:i?`Después va ${w.replace(".","")}.`:`Ordena las palabras para formar la oración. Empieza con ${w}.`,el:()=>byText("#tTiles .tile:not([disabled])",w)})).concat([{t:"¡Muy bien! Termina la oración tú solito."}])},
-  "escribir":()=>[{t:"Pasa tu dedo por encima de la letra gris, sin salirte.",el:()=>$("#pad"),ev:"pointerup"},{t:"Repasa toda la letra. Cuando termines, toca ¡Listo!",el:()=>$("#tCheck")}],
-  "num-count":()=>{const n=$$("#countItems span").length;return[{t:"Toca cada dibujo para contarlo, uno por uno.",el:()=>$("#countItems span")},{t:`Hay ${NUMW[n]}. Toca el número ${n}.`,el:()=>[...$$("#countOpts .opt")].find(b=>+b.textContent===n)}]},
-  "num-sum":()=>{const m=$("#sumQ").textContent.match(/(\d+)\s*\+\s*(\d+)/),a=+m[1],b=+m[2];return[{t:`Cuenta todos los dibujos juntos. ${a} más ${b} son ${a+b}. Toca el ${a+b}.`,el:()=>[...$$("#sumOpts .opt")].find(x=>+x.textContent===a+b)}]},
-  "num-cmp":()=>[{t:"Mira los dos grupos y toca el que tiene más dibujos.",el:()=>[...$$("#cmpRow button")].sort((x,y)=>[...y.textContent].length-[...x.textContent].length)[0]}],
-  "eng-abc":()=>[{t:"Toca la letra A. Escucharás cómo se dice en inglés.",el:()=>$("#eGrid .key")},{t:"¡Muy bien! Toca otras letras para aprender más."}],
-  "eng-words":()=>[{t:"Toca un dibujo para escucharlo en inglés y en español.",el:()=>$("#vGrid .vcard")},{t:"Arriba puedes cambiar de tema: colores, animales, números y más."}],
-  "eng-listen":()=>[{t:"Escucha la palabra en inglés y toca su dibujo. Es este que brilla.",el:()=>byText("#lPics button",lW[1])}],
-  "eng-spell":()=>[{t:`Escucha la palabra y deletréala. Empieza con la letra ${xW[0][0].toUpperCase()}.`,el:()=>byText("#xTiles .tile:not([disabled])",xW[0][0])},{t:"¡Muy bien! Sigue tú solito."}],
-  "eng-sent":()=>{const w=NM(yS[0]).split(/\s+/)[0];return[{t:`Ordena las palabras en inglés. Empieza con ${w}.`,el:()=>byText("#yTiles .tile:not([disabled])",w)},{t:"¡Great job! Termina la oración tú solito."}]}
+  "leer-abc":r=>{const L=ABC[r][0];return[{t:r?`Ahora toca la letra ${L}.`:`Toca la letra ${L} que está brillando para escucharla.`,el:()=>$$("#abcGrid .key")[r]}].concat(r?[]:[{t:"Toca Escuchar para oírla otra vez.",el:()=>$("#abcSpeak")}])},
+  "leer-find":r=>[{t:`${r?"":"Escucha la letra y busca la igual. "}Es la ${ABC[findT][0]}. Tócala.`,el:()=>byText("#findOpts .opt",ABC[findT][0])}],
+  "leer-syl":r=>{const b=$$("#sylRow button")[r];return[{t:r?`Ahora toca ${b?b.textContent:""}.`:"Toca la sílaba que brilla para escuchar cómo suena.",el:()=>$$("#sylRow button")[r]}]},
+  "pal-mix":r=>{const c=["P","M","S"][r],v=["A","E","O"][r];return[{t:`${r?"":"Une una consonante con una vocal. "}Toca la ${c}.`,el:()=>byText("#mixC button",c)},{t:`Ahora toca la vocal ${v}.`,el:()=>byText("#mixV button",v)},{t:`¡${c} con ${v} dice ${(c+v).toLowerCase()}!`}]},
+  "pal-build":r=>syls(bW).map((sy,i)=>({t:i?`Ahora toca ${sy}.`:(r?`Otra palabra. Toca primero ${sy}.`:`Mira el dibujo y arma su nombre con sílabas. Toca primero ${sy}.`),el:()=>byText("#bTiles .tile:not([disabled])",sy)})),
+  "pal-read":r=>(r?[]:[{t:"Toca la palabra para escucharla despacito.",el:()=>$("#rWord")}]).concat([{t:r?`Lee la palabra ${plain(rW)} y toca su dibujo.`:"Ahora toca su dibujo.",el:()=>byText("#rPics button",rW[1])}]),
+  "pal-spell":r=>[...plain(sW)].map((c,i)=>({t:i?`Ahora la ${c}.`:(r?`Otra palabra. Empieza con la ${c}.`:`Escribe la palabra letra por letra. Empieza con la ${c}.`),el:()=>byText("#sTiles .tile:not([disabled])",c)})),
+  "pal-sent":r=>{const p=NM(tS[0]).split(/\s+/);p[p.length-1]+=".";return p.map((w,i)=>({t:i?`Ahora ${w.replace(".","")}.`:(r?`Otra oración. Empieza con ${w}.`:`Ordena las palabras para formar la oración. Empieza con ${w}.`),el:()=>byText("#tTiles .tile:not([disabled])",w)}))},
+  "escribir":r=>{const ch=SETS[mode][ti];return[{t:r?`Ahora repasa la ${ch} con tu dedo.`:`Pasa tu dedo por encima de la ${ch} gris, sin salirte.`,el:()=>$("#pad"),ev:"pointerup"},{t:"Repasa toda la letra. Cuando termines, toca ¡Listo!",el:()=>$("#tCheck")}]},
+  "num-count":r=>{const n=$$("#countItems span").length;return(r?[]:[{t:"Toca cada dibujo para contarlo, uno por uno.",el:()=>$("#countItems span")}]).concat([{t:`${r?"Cuenta otra vez. ":""}Hay ${NUMW[n]}. Toca el número ${n}.`,el:()=>[...$$("#countOpts .opt")].find(b=>+b.textContent===n)}])},
+  "num-sum":r=>{const m=$("#sumQ").textContent.match(/(\d+)\s*\+\s*(\d+)/),a=+m[1],b=+m[2];return[{t:`${r?"Otra suma. ":"Cuenta todos los dibujos juntos. "}${a} más ${b} son ${a+b}. Toca el ${a+b}.`,el:()=>[...$$("#sumOpts .opt")].find(x=>+x.textContent===a+b)}]},
+  "num-cmp":r=>[{t:r?"Otra vez: toca el grupo que tiene más.":"Mira los dos grupos y toca el que tiene más dibujos.",el:()=>[...$$("#cmpRow button")].sort((x,y)=>[...y.textContent].length-[...x.textContent].length)[0]}],
+  "eng-abc":r=>[{t:r?`Ahora toca la ${EABC[r][0]}.`:"Toca la letra A. Escucharás cómo se dice en inglés.",el:()=>$$("#eGrid .key")[r]}],
+  "eng-words":r=>[{t:r?"Toca otro dibujo que brilla.":"Toca un dibujo para escucharlo en inglés y en español.",el:()=>$$("#vGrid .vcard")[r]}],
+  "eng-listen":r=>[{t:r?"Escucha otra vez y toca el dibujo que brilla.":"Escucha la palabra en inglés y toca su dibujo. Es este que brilla.",el:()=>byText("#lPics button",lW[1])}],
+  "eng-spell":r=>[...xW[0]].map((c,i)=>({t:i?`Ahora la ${c.toUpperCase()}.`:`${r?"Otra palabra. ":"Escucha la palabra y deletréala. "}Empieza con la ${c.toUpperCase()}.`,el:()=>byText("#xTiles .tile:not([disabled])",c)})),
+  "eng-sent":r=>{const p=NM(yS[0]).split(/\s+/);p[p.length-1]+=".";return p.map((w,i)=>({t:i?`Ahora ${w.replace(/[.,]/g,"")}.`:`${r?"Otra oración. ":"Ordena las palabras en inglés. "}Empieza con ${w}.`,el:()=>byText("#yTiles .tile:not([disabled])",w)}))}
 };
+const TUT_REPS=3, EXPLORE=new Set(["leer-abc","leer-syl","pal-mix","eng-abc","eng-words"]);
 let TT=null;
-function endTut(done){const T=TT;if(!T)return;TT=null;if(T.el)T.el.classList.remove("tut-glow");if(T.off)T.off();cancelAnimationFrame(T.raf);
+function endTut(done){const T=TT;if(!T)return;TT=null;if(T.el)T.el.classList.remove("tut-glow");if(T.off)T.off();cancelAnimationFrame(T.raf);clearTimeout(T.tm);
   $("#tutBox").hidden=true;$("#tutHand").hidden=true;if(done){S.tut[T.key]=1;save()}}
 function maybeTut(key){if(!key||!TUT[key]||(S.tut||{})[key])return;if(!$("#setupModal").hidden||!$("#roundModal").hidden)return;
-  endTut(false);let steps;try{steps=TUT[key]()}catch(e){return}TT={key,steps,i:-1};nextStep()}
-function nextStep(){const T=TT;if(!T)return;if(T.el){T.el.classList.remove("tut-glow");T.el=null}if(T.off){T.off();T.off=null}cancelAnimationFrame(T.raf);
-  T.i++;if(T.i>=T.steps.length){endTut(true);return}
+  endTut(false);let steps;try{steps=TUT[key](0)}catch(e){return}TT={key,rep:0,steps,i:-1};nextStep()}
+function tutSay(T,t){$("#tutText").textContent=t;$("#tutBox").hidden=false;speak(t,"es",true)}
+function clearStep(T){if(T.el){T.el.classList.remove("tut-glow");T.el=null}if(T.off){T.off();T.off=null}cancelAnimationFrame(T.raf);$("#tutHand").hidden=true}
+function finishRep(T){
+  const ok=T.key!=="escribir"||lock.trace,nr=ok?T.rep+1:T.rep;
+  if(nr>=TUT_REPS){tutSay(T,"¡Excelente! Ya sabes cómo se hace. Ahora sigue tú solito.");T.tm=setTimeout(()=>{if(TT===T)endTut(true)},3200);return}
+  tutSay(T,ok?`¡Muy bien! Vamos otra vez. Van ${nr} de ${TUT_REPS}.`:"Casi. Intentémoslo de nuevo.");
+  const again=()=>{if(TT!==T)return;if(!$("#roundModal").hidden){T.tm=setTimeout(again,800);return}
+    let st;try{st=TUT[T.key](nr)}catch(e){endTut(true);return}T.rep=nr;T.steps=st;T.i=-1;nextStep()};
+  T.tm=setTimeout(again,EXPLORE.has(T.key)?1600:2800);
+}
+function nextStep(){const T=TT;if(!T)return;clearStep(T);
+  T.i++;if(T.i>=T.steps.length){finishRep(T);return}
   const st=T.steps[T.i],idx=T.i;let el=null;try{el=st.el?st.el():null}catch(e){}
   if(st.el&&!el){nextStep();return}
-  $("#tutText").textContent=st.t;$("#tutBox").hidden=false;speak(st.t,"es",true);
-  if(!el){$("#tutHand").hidden=true;setTimeout(()=>{if(TT===T&&T.i===idx)nextStep()},3600);return}
+  tutSay(T,st.t);
+  if(!el){T.tm=setTimeout(()=>{if(TT===T&&T.i===idx)nextStep()},2400);return}
   el.classList.add("tut-glow");T.el=el;try{el.scrollIntoView({block:"center",behavior:"smooth"})}catch(e){}
   const ev=st.ev||"click",h=()=>{if(TT===T&&T.i===idx)setTimeout(()=>{if(TT===T&&T.i===idx)nextStep()},ev==="click"?700:300)};
   el.addEventListener(ev,h);T.off=()=>el.removeEventListener(ev,h);
   const hand=$("#tutHand");hand.hidden=false;
-  const pos=()=>{if(TT!==T||T.el!==el)return;const r=el.getBoundingClientRect();hand.style.transform="";
+  const pos=()=>{if(TT!==T||T.el!==el)return;const r=el.getBoundingClientRect();
     hand.style.left=Math.max(4,Math.min(innerWidth-50,r.left+r.width/2-16))+"px";hand.style.top=Math.min(innerHeight-56,r.top+r.height*.55)+"px";T.raf=requestAnimationFrame(pos)};pos();
 }
 $("#tutSkip").onclick=()=>endTut(true);
