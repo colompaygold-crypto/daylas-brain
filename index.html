@@ -50,16 +50,23 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .hi{margin-top:14px;font-size:20px}
 .hi b{color:var(--gold)}
 .worlds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.world{border-radius:28px;padding:20px 14px 18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;overflow:hidden;transition:transform .15s}
-.world:hover{transform:translateY(-4px) rotate(-1deg)}
-.world:active{transform:scale(.97)}
-.world .big{font-family:var(--letter);font-weight:700;font-size:56px;line-height:1}
-.world .name{font-size:22px;font-weight:700}
-.world .sub{font-size:14px;opacity:.85}
+.world{border-radius:26px;padding:16px 16px 16px 16px;min-height:108px;display:flex;align-items:center;gap:16px;text-align:left;position:relative;overflow:hidden;transition:transform .15s;box-shadow:0 10px 26px #0006,inset 0 1px 0 #ffffff50}
+.world::before{content:"";position:absolute;right:-34px;top:-46px;width:140px;height:140px;border-radius:50%;background:#ffffff18;pointer-events:none}
+.world::after{content:"";position:absolute;right:46px;bottom:-60px;width:90px;height:90px;border-radius:50%;background:#ffffff10;pointer-events:none}
+.world:hover{transform:translateY(-3px)}
+.world:active{transform:scale(.98)}
+.world .big{flex:0 0 74px;height:74px;border-radius:22px;background:#ffffff30;box-shadow:inset 0 0 0 2px #ffffff45,0 6px 14px #0003;display:grid;place-items:center;font-family:var(--letter);font-weight:700;font-size:34px;line-height:1;letter-spacing:-.5px;position:relative;z-index:1}
+.w-pal .big{font-size:21px;letter-spacing:0}
+.w-num .big,.w-eng .big{font-size:27px;letter-spacing:1px}
+.w-num .big{background:#ffffff55}
+.world .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;position:relative;z-index:1}
+.world .name{font-size:24px;font-weight:700;line-height:1.1}
+.world .sub{font-size:14px;opacity:.92;line-height:1.3}
+.world .go{flex:0 0 auto;font-size:34px;font-weight:600;opacity:.75;position:relative;z-index:1;margin-left:-4px}
 .w-leer{background:linear-gradient(160deg,#ff4fa3,#b8238a)}
 .w-escribir{background:linear-gradient(160deg,#3fe0ff,#2a6fd8)}
 .w-num{background:linear-gradient(160deg,#ffd23f,#ff8a2b);color:#3a1600}
-.prog{width:80%;height:8px;background:#0004;border-radius:9px;overflow:hidden}
+.prog{display:block;width:100%;max-width:210px;height:7px;margin-top:8px;background:#0000002e;border-radius:9px;overflow:hidden}
 .prog i{display:block;height:100%;background:#fff;border-radius:9px}
 .parents{margin-top:22px;text-align:center}
 .parents button{color:var(--soft);text-decoration:underline;font-size:15px}
@@ -116,7 +123,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 
 /* Palabras */
 .w-pal{background:linear-gradient(160deg,#5cf2a6,#13a37a);color:#06281c}
-.badge{position:absolute;top:10px;right:12px;background:#fff;color:#c2187f;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.5px}
+.badge{position:absolute;top:10px;right:14px;z-index:2;background:#fff;color:#c2187f;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.5px}
 .mix{display:grid;gap:12px;margin-bottom:14px}
 .mixrow{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .mixrow button{font-family:var(--letter);font-weight:700;font-size:26px;width:52px;height:52px;border-radius:14px;background:var(--stage2)}
@@ -141,7 +148,6 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 
 /* English */
 .w-eng{grid-column:1/-1;background:linear-gradient(120deg,#7a3cff,#3fe0ff)}
-.w-eng .big{font-size:48px}
 .cats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
 .cats button{background:var(--stage2);border-radius:999px;padding:8px 14px;font-weight:600;font-size:16px;border:2px solid transparent}
 .cats button.on{background:var(--cyan);color:var(--night)}
@@ -206,9 +212,10 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
   .hero{grid-template-columns:1fr;text-align:center}
   .tag{margin-inline:auto}
   .worlds{grid-template-columns:1fr}
-  .world{flex-direction:row;justify-content:flex-start;text-align:left;padding:16px 18px}
-  .world .big{font-size:46px;width:70px;text-align:center}
-  .world .prog{display:none}
+  .world{min-height:100px;padding:14px;gap:14px}
+  .world .big{flex-basis:66px;height:66px;font-size:30px}
+  .w-pal .big{font-size:19px}.w-num .big,.w-eng .big{font-size:24px}
+  .world .name{font-size:22px}
   .opt{font-size:44px}
   .syl button{font-size:24px;padding:14px 0}
   .card .L{font-size:96px}
@@ -296,15 +303,15 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
       <h1 class="logo"><span class="a">DAYLA'S</span><span class="b">BRAIN</span></h1>
       <p class="tag">Letras, trazos y números para pequeñas estrellas desde los 4 años.</p>
       <p class="hi">¡Hola, <b class="kidName">Dayla</b>! ¿Qué aprendemos hoy?</p>
-      <div class="rank">Nivel: <b id="rankName">Semilla 🌱</b> · <span id="rankNext"></span><div class="rankbar"><i id="rankBar" style="width:0"></i></div></div>
+      <div class="rank">Nivel: <b id="rankName">Semilla 🌱</b><br><span id="rankNext"></span><div class="rankbar"><i id="rankBar" style="width:0"></i></div></div>
     </div>
   </div>
   <div class="worlds">
-    <button class="world w-leer" data-go="leer"><span class="big">Aa</span><span><span class="name">Leer</span><br><span class="sub">Letras y sílabas</span></span><span class="prog"><i data-prog="leer"></i></span></button>
-    <button class="world w-pal" data-go="palabras"><span class="badge">NUEVO</span><span class="big">ma+sa</span><span><span class="name">Palabras</span><br><span class="sub">Arma, lee y escribe</span></span><span class="prog"><i data-prog="palabras"></i></span></button>
-    <button class="world w-escribir" data-go="escribir"><span class="big">✎</span><span><span class="name">Escribir</span><br><span class="sub">Traza con el dedo</span></span><span class="prog"><i data-prog="escribir"></i></span></button>
-    <button class="world w-num" data-go="numeros"><span class="big">123</span><span><span class="name">Números</span><br><span class="sub">Contar y sumar</span></span><span class="prog"><i data-prog="numeros"></i></span></button>
-    <button class="world w-eng" data-go="ingles"><span class="badge">NEW</span><span class="big">ABC</span><span><span class="name">English</span><br><span class="sub">Phonics, words & sentences · Inglés</span></span><span class="prog"><i data-prog="ingles"></i></span></button>
+    <button class="world w-leer" data-go="leer"><span class="big" aria-hidden="true">Aa</span><span class="txt"><span class="name">Leer</span><span class="sub">Letras y sílabas</span><span class="prog"><i data-prog="leer"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-pal" data-go="palabras"><span class="badge">NUEVO</span><span class="big" aria-hidden="true">ma+sa</span><span class="txt"><span class="name">Palabras</span><span class="sub">Arma, lee y escribe</span><span class="prog"><i data-prog="palabras"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-escribir" data-go="escribir"><span class="big" aria-hidden="true">✎</span><span class="txt"><span class="name">Escribir</span><span class="sub">Traza con el dedo</span><span class="prog"><i data-prog="escribir"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-num" data-go="numeros"><span class="big" aria-hidden="true">123</span><span class="txt"><span class="name">Números</span><span class="sub">Contar y sumar</span><span class="prog"><i data-prog="numeros"></i></span></span><span class="go" aria-hidden="true">›</span></button>
+    <button class="world w-eng" data-go="ingles"><span class="badge">NEW</span><span class="big" aria-hidden="true">ABC</span><span class="txt"><span class="name">English</span><span class="sub">Inglés · sonidos, palabras y oraciones</span><span class="prog"><i data-prog="ingles"></i></span></span><span class="go" aria-hidden="true">›</span></button>
   </div>
   <div class="parents"><button data-go="padres">Zona de papás</button></div>
   <p class="firma">BY CARLOS BERBESI 2026</p>
