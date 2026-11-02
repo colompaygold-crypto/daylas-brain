@@ -704,12 +704,13 @@ function sayLetter(){const [L,w]=ABC[cur];say(`${L}. ${L} de ${w}`)}
 $("#abcSpeak").onclick=sayLetter;showLetter(0);
 
 let findT;
-function newFind(){
+const lock={};let traceTok=0;
+function newFind(){lock.find=false;
   const pool=shuffle([...ABC.keys()]).slice(0,3);findT=pool[0];
   $("#findTarget").textContent=ABC[findT][0];
   const box=$("#findOpts");box.innerHTML="";
   shuffle(pool.slice()).forEach(i=>{const b=document.createElement("button");b.className="opt";b.textContent=ABC[i][0];
-    b.onclick=()=>{if(i===findT){b.classList.add("ok");win("leer");setTimeout(newFind,1100)}else{miss("leer");b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Intenta otra vez")}};box.appendChild(b)});
+    b.onclick=()=>{if(lock.find)return;if(i===findT){lock.find=true;b.classList.add("ok");win("leer");setTimeout(newFind,1100)}else{miss("leer");b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Intenta otra vez")}};box.appendChild(b)});
 }
 $("#findSpeak").onclick=()=>say("¿Dónde está la letra "+ABC[findT][0]+"?");newFind();
 
@@ -735,7 +736,7 @@ function setupPad(){
   f.catch(()=>{}).then(()=>{ready=true;drawGuide()});
 }
 function drawGuide(){
-  if(!ready||!ctx)return;const ch=SETS[mode][ti],W=pad.width;
+  if(!ready||!ctx)return;lock.trace=false;traceTok++;const ch=SETS[mode][ti],W=pad.width;
   $("#traceName").textContent=ch;$("#traceMsg").textContent="Sigue la letra gris sin salirte mucho.";
   const g=guide.getContext("2d");g.clearRect(0,0,W,W);g.fillStyle="#000";g.textAlign="center";g.textBaseline="middle";
   g.font=`700 ${W*.78}px Andika, "Trebuchet MS", sans-serif`;g.fillText(ch,W/2,W*.53);
@@ -751,7 +752,7 @@ function repaint(){const W=pad.width;ctx.clearRect(0,0,W,W);
 }
 function pt(e){const r=pad.getBoundingClientRect();return[(e.clientX-r.left)*pad.width/r.width,(e.clientY-r.top)*pad.height/r.height]}
 const padEl=$("#pad");
-padEl.addEventListener("pointerdown",e=>{if(!ready)return;drawing=true;padEl.setPointerCapture(e.pointerId);strokes.push({c:color,p:[pt(e)]});repaint()});
+padEl.addEventListener("pointerdown",e=>{if(!ready||lock.trace)return;drawing=true;padEl.setPointerCapture(e.pointerId);strokes.push({c:color,p:[pt(e)]});repaint()});
 padEl.addEventListener("pointermove",e=>{if(!drawing)return;strokes[strokes.length-1].p.push(pt(e));repaint()});
 ["pointerup","pointercancel","pointerleave"].forEach(ev=>padEl.addEventListener(ev,()=>drawing=false));
 function clearPad(){strokes=[];repaint()}
@@ -759,6 +760,7 @@ $("#tClear").onclick=clearPad;
 $("#tNext").onclick=()=>{ti=(ti+1)%SETS[mode].length;strokes=[];drawGuide()};
 $("#tPrev").onclick=()=>{ti=(ti-1+SETS[mode].length)%SETS[mode].length;strokes=[];drawGuide()};
 $("#tCheck").onclick=()=>{
+  if(lock.trace){$("#traceMsg").textContent="¡Ya la lograste! Ahora viene la siguiente.";return}
   if(!strokes.length){say("Primero traza la letra");return}
   const W=pad.width,u=document.createElement("canvas");u.width=W;u.height=W;const uc=u.getContext("2d");
   uc.lineCap="round";uc.lineJoin="round";uc.lineWidth=penW*1.25;uc.strokeStyle="#000";
@@ -767,7 +769,8 @@ $("#tCheck").onclick=()=>{
   let g=0,hit=0,us=0,out=0;
   for(let i=3;i<gd.length;i+=4*7){const a=gd[i]>60,b=ud[i]>60;if(a){g++;if(b)hit++}if(b){us++;if(!a)out++}}
   const cov=g?hit/g:0,spill=us?out/us:1;
-  if(cov>.5&&spill<.72){$("#traceMsg").textContent="¡Trazo perfecto! Toca ▶ para la siguiente.";win("escribir")}
+  if(cov>.5&&spill<.72){lock.trace=true;$("#traceMsg").textContent="¡Trazo perfecto! Ahora viene la siguiente.";win("escribir");
+    const tk=traceTok;setTimeout(()=>{if(tk===traceTok&&lock.trace){ti=(ti+1)%SETS[mode].length;strokes=[];drawGuide()}},2000)}
   else if(cov<=.5){miss("escribir");$("#traceMsg").textContent="Casi. Repasa toda la letra gris.";say("Casi. Repasa toda la letra")}
   else{miss("escribir");$("#traceMsg").textContent="Intenta quedarte dentro de la letra gris.";say("Intenta quedarte dentro de la letra")}
 };
@@ -776,10 +779,10 @@ window.addEventListener("resize",()=>{if(!$("#escribir").hidden){const s=strokes
 /* ---------- NÚMEROS ---------- */
 const OBJ=["⭐","🍎","🎈","🦋","🐥","🌸","🍓","🐠","💎","🧁"];
 const NUMW=["cero","uno","dos","tres","cuatro","cinco","seis","siete","ocho","nueve","diez"];
-function opts3(ans,max,box,area,next){
+function opts3(ans,max,box,area,next){lock[box.id]=false;
   const set=new Set([ans]);while(set.size<3){const v=Math.max(0,Math.min(max,ans+rnd(5)-2));set.add(v)}
   box.innerHTML="";shuffle([...set]).forEach(v=>{const b=document.createElement("button");b.className="opt";b.textContent=v;
-    b.onclick=()=>{if(v===ans){b.classList.add("ok");win(area);setTimeout(next,1100)}else{miss(area);b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Cuenta otra vez")}};box.appendChild(b)});
+    b.onclick=()=>{if(lock[box.id])return;if(v===ans){lock[box.id]=true;b.classList.add("ok");win(area);setTimeout(next,1100)}else{miss(area);b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("Cuenta otra vez")}};box.appendChild(b)});
 }
 function newCount(){const n=1+rnd(10),o=OBJ[rnd(OBJ.length)];
   const box=$("#countItems");box.innerHTML="";for(let i=0;i<n;i++){const s=document.createElement("span");s.textContent=o;s.style.cursor="pointer";s.onclick=()=>say(NUMW[i+1]);box.appendChild(s)}
@@ -788,9 +791,9 @@ function newSum(){const a=1+rnd(5),b=1+rnd(Math.min(5,10-a)),o=OBJ[rnd(OBJ.lengt
   $("#sumQ").textContent=`¿Cuánto es ${a} + ${b}?`;
   $("#sumItems").innerHTML=`<span>${o.repeat(a)}</span><span class="plus">+</span><span>${o.repeat(b)}</span>`;
   opts3(a+b,10,$("#sumOpts"),"numeros",newSum)}
-function newCmp(){let a=1+rnd(9),b=1+rnd(9);while(a===b)b=1+rnd(9);const o=OBJ[rnd(OBJ.length)];
+function newCmp(){lock.cmp=false;let a=1+rnd(9),b=1+rnd(9);while(a===b)b=1+rnd(9);const o=OBJ[rnd(OBJ.length)];
   const row=$("#cmpRow");row.innerHTML="";[a,b].forEach(n=>{const btn=document.createElement("button");btn.textContent=o.repeat(n);
-    btn.onclick=()=>{if(n===Math.max(a,b)){btn.style.borderColor="var(--mint)";win("numeros");setTimeout(newCmp,1100)}else{miss("numeros");btn.style.borderColor="#ff6b6b";say("Ese grupo tiene menos. Cuenta otra vez")}};row.appendChild(btn)})}
+    btn.onclick=()=>{if(lock.cmp)return;if(n===Math.max(a,b)){lock.cmp=true;btn.style.borderColor="var(--mint)";win("numeros");setTimeout(newCmp,1100)}else{miss("numeros");btn.style.borderColor="#ff6b6b";say("Ese grupo tiene menos. Cuenta otra vez")}};row.appendChild(btn)})}
 newCount();newSum();newCmp();
 
 /* ---------- PALABRAS ---------- */
@@ -845,10 +848,10 @@ $("#bSay").onclick=()=>say(plain(bW));$("#bSkip").onclick=newBuild;
 
 /* Lee y elige */
 let rW;
-function newRead(){const l=shuffle(WORDS.filter(w=>syls(w).length===palLvl&&w!==rW&&okW(w))).slice(0,3);rW=l[0];
+function newRead(){lock.read=false;const l=shuffle(WORDS.filter(w=>syls(w).length===palLvl&&w!==rW&&okW(w))).slice(0,3);rW=l[0];
   $("#rWord").textContent=plain(rW);const box=$("#rPics");box.innerHTML="";
   shuffle(l.slice()).forEach(w=>{const b=document.createElement("button");b.textContent=w[1];b.setAttribute("aria-label","Dibujo "+(box.children.length+1));
-    b.onclick=()=>{if(w===rW){b.style.borderColor="var(--mint)";win("palabras",plain(rW));setTimeout(newRead,1500)}else{miss("palabras");b.style.borderColor="#ff6b6b";say("Lee otra vez")}};box.appendChild(b)})}
+    b.onclick=()=>{if(lock.read)return;if(w===rW){lock.read=true;b.style.borderColor="var(--mint)";win("palabras",plain(rW));setTimeout(newRead,1500)}else{miss("palabras");b.style.borderColor="#ff6b6b";say("Lee otra vez")}};box.appendChild(b)})}
 $("#rWord").onclick=()=>say(syls(rW).join("... ")+"... "+plain(rW));
 
 /* Escribe letra por letra */
@@ -895,10 +898,10 @@ Object.keys(VOC).forEach(c=>{const b=document.createElement("button");b.textCont
 
 const ALLV=[].concat(...Object.values(VOC)).filter((v,i,a)=>a.findIndex(x=>x[0]===v[0])===i);
 let lW;
-function newListen(){const pool=shuffle(ALLV.filter(v=>v!==lW)).slice(0,3);lW=pool[0];$("#lTrans").innerHTML="";
+function newListen(){lock.listen=false;const pool=shuffle(ALLV.filter(v=>v!==lW)).slice(0,3);lW=pool[0];$("#lTrans").innerHTML="";
   const box=$("#lPics");box.innerHTML="";
   shuffle(pool.slice()).forEach(v=>{const b=document.createElement("button");b.textContent=v[1];b.setAttribute("aria-label","Picture "+(box.children.length+1));
-    b.onclick=()=>{if(v===lW){b.style.borderColor="var(--mint)";$("#lTrans").innerHTML=`<b>${v[0]}</b> = ${v[2]}`;win("ingles",v[0],true);setTimeout(newListen,1900)}
+    b.onclick=()=>{if(lock.listen)return;if(v===lW){lock.listen=true;b.style.borderColor="var(--mint)";$("#lTrans").innerHTML=`<b>${v[0]}</b> = ${v[2]}`;win("ingles",v[0],true);setTimeout(newListen,1900)}
       else{miss("ingles");b.style.borderColor="#ff6b6b";sayEn("Try again. "+lW[0])}};box.appendChild(b)});
   setTimeout(()=>{if(!$("#ingles").hidden&&!$("#eng-listen").hidden)sayEn(lW[0])},300)}
 $("#lSay").onclick=()=>sayEn(lW[0]);
