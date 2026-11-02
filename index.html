@@ -8,6 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Dayla's Brain">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="author" content="Carlos Berbesi">
 <meta name="description" content="Aprende a leer, escribir y contar jugando. Para niños desde los 4 años.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
@@ -185,6 +186,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .setup .btn{font-size:20px;padding:14px 22px;margin-top:6px}
 .setup .btn:disabled{opacity:.4;cursor:not-allowed}
 
+.firma{text-align:center;margin:22px 0 70px;font-size:13px;font-weight:700;letter-spacing:3px;color:var(--soft);opacity:.85}
+.firma::before,.firma::after{content:"★";color:var(--gold);margin:0 10px;letter-spacing:0}
+
 /* Música */
 .music{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--pink);color:#fff;font-size:26px;display:grid;place-items:center;box-shadow:0 0 0 4px #ffffff33,0 8px 24px #0008;z-index:15}
 .music.off{background:var(--stage2)}
@@ -303,6 +307,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     <button class="world w-eng" data-go="ingles"><span class="badge">NEW</span><span class="big">ABC</span><span><span class="name">English</span><br><span class="sub">Phonics, words & sentences · Inglés</span></span><span class="prog"><i data-prog="ingles"></i></span></button>
   </div>
   <div class="parents"><button data-go="padres">Zona de papás</button></div>
+  <p class="firma">BY CARLOS BERBESI 2026</p>
 </section>
 
 <!-- ============ LEER ============ -->
@@ -508,6 +513,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     <div class="grades" id="gradeBox"></div>
     <div class="row" style="justify-content:flex-start;margin-bottom:10px"><button class="btn" id="shareReport">📤 Compartir progreso</button></div>
     <p>Sesiones cortas de 10 a 15 minutos funcionan mejor a esta edad. Lean juntos en voz alta, celebren cada estrella y repasen las sílabas con palabras de la casa: mamá, papá, mesa, sopa.</p>
+    <p class="firma" style="margin:18px 0 6px">BY CARLOS BERBESI 2026</p>
     <div class="row" style="justify-content:flex-start"><button class="btn ghost" id="resetBtn">Reiniciar progreso</button><span id="resetAsk" hidden> <button class="btn" id="resetYes">Sí, reiniciar</button></span></div>
   </div>
 </section>

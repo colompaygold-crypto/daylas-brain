@@ -12,6 +12,7 @@ cat <<HEAD
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Dayla's Brain">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="author" content="Carlos Berbesi">
 <meta name="description" content="Aprende a leer, escribir y contar jugando. Para niños desde los 4 años.">
 <link rel="manifest" href="${PREFIX}manifest.webmanifest">
 <link rel="icon" type="image/png" href="${PREFIX}icons/icon-192.png">
