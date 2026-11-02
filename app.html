@@ -609,11 +609,13 @@ function roundDone(area){
 }
 $("#mOk").onclick=()=>$("#roundModal").hidden=true;
 const APP_URL=/^https?:$/.test(location.protocol)&&!/claude\.ai|claudeusercontent|claude\.site/.test(location.hostname)?location.origin+location.pathname:"https://colompaygold-crypto.github.io/daylas-brain/";
+// Enlace público que se comparte siempre (cambiar aquí cuando esté listo el subdominio de synerge.com.co)
+const SHARE_URL="https://colompaygold-crypto.github.io/daylas-brain/";
 function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
 async function share(text){
-  const data={title:"Dayla's Brain",text,url:APP_URL};
+  const data={title:"Dayla's Brain",text,url:SHARE_URL};
   try{if(navigator.share){await navigator.share(data);return}}catch(e){if(e&&e.name==="AbortError")return}
-  try{await navigator.clipboard.writeText(text+" "+APP_URL);toast("Enlace copiado. Pégalo en WhatsApp o en un correo.")}catch(e){toast("Comparte este enlace: "+APP_URL)}
+  try{await navigator.clipboard.writeText(text+" "+SHARE_URL);toast("Enlace copiado. Pégalo en WhatsApp o en un correo.")}catch(e){toast("Comparte este enlace: "+SHARE_URL)}
 }
 $("#mShare").onclick=()=>share(lastShare);
 $("#shareBtn").onclick=()=>share("Mira esta app para que los niños aprendan a leer, escribir y contar jugando 🌟");
