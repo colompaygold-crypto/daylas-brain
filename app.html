@@ -186,6 +186,18 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .firma{text-align:center;margin:22px 0 70px;font-size:13px;font-weight:700;letter-spacing:3px;color:var(--soft);opacity:.85}
 .firma::before,.firma::after{content:"★";color:var(--gold);margin:0 10px;letter-spacing:0}
 
+/* Mini tutorial */
+.tutBox{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);width:min(560px,calc(100% - 32px));background:var(--ink);color:var(--night);border-radius:24px;padding:12px 14px;display:flex;align-items:center;gap:12px;z-index:25;box-shadow:0 0 0 4px var(--gold),0 14px 40px #000a;animation:tutIn .35s ease both}
+@keyframes tutIn{from{opacity:0;transform:translate(-50%,-14px)}}
+.tutBox p{margin:0;flex:1;min-width:0;font-weight:600;font-size:18px;line-height:1.3}
+.tutIco{font-size:34px;line-height:1}
+.tutBtns{display:flex;flex-direction:column;gap:6px}
+.tutBtns button{background:var(--stage2);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:600;white-space:nowrap}
+.tutHand{position:fixed;left:0;top:0;font-size:46px;line-height:1;z-index:26;pointer-events:none;animation:tap .9s ease-in-out infinite;filter:drop-shadow(0 4px 6px #0009)}
+@keyframes tap{50%{transform:translateY(-14px)}}
+.tut-glow{outline:4px solid var(--gold)!important;outline-offset:3px;animation:tutGlow .9s ease-in-out infinite!important;position:relative;z-index:3}
+@keyframes tutGlow{0%,100%{box-shadow:0 0 0 0 #ffd23f00;filter:brightness(1)}50%{box-shadow:0 0 0 8px #ffd23f66,0 0 30px #ffd23f;filter:brightness(1.3)}}
+
 /* Música */
 .music{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--pink);color:#fff;font-size:26px;display:grid;place-items:center;box-shadow:0 0 0 4px #ffffff33,0 8px 24px #0008;z-index:15}
 .music.off{background:var(--stage2)}
@@ -509,7 +521,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
       <span>Rondas con 3 estrellas</span><span id="pPerfect">0</span>
     </div>
     <div class="grades" id="gradeBox"></div>
-    <div class="row" style="justify-content:flex-start;margin-bottom:10px"><button class="btn" id="shareReport">📤 Compartir progreso</button></div>
+    <div class="row" style="justify-content:flex-start;margin-bottom:10px"><button class="btn" id="shareReport">📤 Compartir progreso</button><button class="btn ghost" id="tutReset">🎓 Repetir tutoriales</button></div>
     <p>Sesiones cortas de 10 a 15 minutos funcionan mejor a esta edad. Lean juntos en voz alta, celebren cada estrella y repasen las sílabas con palabras de la casa: mamá, papá, mesa, sopa.</p>
     <p class="firma" style="margin:18px 0 6px">BY CARLOS BERBESI 2026</p>
     <div class="row" style="justify-content:flex-start"><button class="btn ghost" id="resetBtn">Reiniciar progreso</button><span id="resetAsk" hidden> <button class="btn" id="resetYes">Sí, reiniciar</button></span></div>
@@ -518,6 +530,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 
 </div>
 <button class="music" id="musicBtn" aria-label="Música de fondo">🎵</button>
+<div class="tutBox" id="tutBox" hidden role="status" aria-live="polite"><span class="tutIco" aria-hidden="true">🌟</span><p id="tutText"></p><div class="tutBtns"><button id="tutRep">🔊 Otra vez</button><button id="tutSkip">Saltar</button></div></div>
+<div class="tutHand" id="tutHand" hidden aria-hidden="true">👆</div>
 <div class="modal" id="setupModal" hidden role="dialog" aria-modal="true" aria-labelledby="setupTitle">
   <div class="mbox setup">
     <div style="font-size:54px;line-height:1">🌟</div>
@@ -549,9 +563,9 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[
 /* ---------- Estado ---------- */
 const AREAS=[["leer","Leer"],["palabras","Palabras"],["escribir","Escribir"],["numeros","Números"],["ingles","English"]];
 const zero=()=>({leer:0,palabras:0,escribir:0,numeros:0,ingles:0});
-const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,ingles:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"",age:null,setup:false});
+const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,ingles:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"",age:null,setup:false,tut:{}});
 let S=newS();
-try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s){S={...S,...s};if(s.setup==null)S.setup=true;S.miss={...zero(),...(s.miss||{})};if(s.pts==null)S.pts=(s.stars||0)*10}}catch(e){}
+try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s){S={...S,...s};if(s.setup==null)S.setup=true;S.tut=s.tut||{};S.miss={...zero(),...(s.miss||{})};if(s.pts==null)S.pts=(s.stars||0)*10}}catch(e){}
 const RANKS=[[0,"Semilla 🌱"],[100,"Estrellita ⭐"],[300,"Cantante 🎤"],[600,"Estrella K-pop 🌟"],[1000,"Súper Estrella 💫"],[2000,"Leyenda 👑"]];
 const rankOf=p=>{let i=0;RANKS.forEach((r,j)=>{if(p>=r[0])i=j});return i};
 const gradeOf=a=>a>=.9?"Excelente":a>=.75?"Muy bien":a>=.6?"Bien":"Sigue practicando";
@@ -700,10 +714,12 @@ $("#installBtn").onclick=async()=>{
 try{if("serviceWorker" in navigator&&APP_URL===location.origin+location.pathname)navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
 
 /* ---------- Navegación ---------- */
-function go(id){$$("section").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==="escribir")setTimeout(setupPad,30)}
+function go(id){endTut(false);$$("section").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==="escribir")setTimeout(setupPad,30);
+  setTimeout(()=>{const sec=$("#"+id);if(!sec||sec.hidden)return;const pn=sec.querySelector(".panel[id]:not([hidden])");maybeTut(id==="escribir"?"escribir":pn&&pn.id)},id==="escribir"?800:450)}
 $$("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
 $$(".tab[data-tab]").forEach(t=>t.addEventListener("click",()=>{
-  const bar=t.parentElement;bar.querySelectorAll(".tab").forEach(x=>{x.setAttribute("aria-selected",x===t);const p=$("#"+x.dataset.tab);if(p)p.hidden=x!==t});
+  endTut(false);const bar=t.parentElement;bar.querySelectorAll(".tab").forEach(x=>{x.setAttribute("aria-selected",x===t);const p=$("#"+x.dataset.tab);if(p)p.hidden=x!==t});
+  setTimeout(()=>maybeTut(t.dataset.tab),450);
 }));
 
 /* ---------- LEER ---------- */
@@ -936,6 +952,49 @@ function newSentEn(keep){if(!keep){let n;do{n=ESENT[rnd(ESENT.length)]}while(n==
 $("#ySay").onclick=()=>sayEn(NM(yS[0]));$("#yRedo").onclick=()=>newSentEn(true);$("#ySkip").onclick=()=>newSentEn();newSentEn();
 newListen();
 
+/* ---------- MINI TUTORIALES (la primera vez en cada juego) ---------- */
+const byText=(sel,txt)=>[...$$(sel)].find(b=>b.textContent===txt);
+const TUT={
+  "leer-abc":()=>[{t:"Toca la letra A que está brillando para escucharla.",el:()=>$("#abcGrid .key")},{t:"¡Muy bien! Toca Escuchar para oírla otra vez.",el:()=>$("#abcSpeak")},{t:"Ahora toca otras letras y aprende sus palabras."}],
+  "leer-find":()=>[{t:`Escucha la letra y busca la igual. Es la ${ABC[findT][0]}. Tócala.`,el:()=>byText("#findOpts .opt",ABC[findT][0])},{t:"¡Así se hace! Ahora sigue tú solito."}],
+  "leer-syl":()=>[{t:"Toca la sílaba que brilla para escuchar cómo suena.",el:()=>$("#sylRow button")},{t:"Ahora elige otra letra y escucha sus sílabas.",el:()=>$$("#consRow button")[1]},{t:"¡Excelente! Sigue explorando las sílabas."}],
+  "pal-mix":()=>[{t:"Toca una consonante. Prueba con la P.",el:()=>byText("#mixC button","P")},{t:"Ahora toca una vocal. Prueba con la A.",el:()=>byText("#mixV button","A")},{t:"¡P con A dice PA! Prueba otras combinaciones."}],
+  "pal-build":()=>syls(bW).map((sy,i)=>({t:i?`Ahora toca ${sy}.`:`Mira el dibujo y arma su nombre con sílabas. Toca primero ${sy}.`,el:()=>byText("#bTiles .tile:not([disabled])",sy)})).concat([{t:"¡Lo lograste! Ahora arma las demás tú solito."}]),
+  "pal-read":()=>[{t:"Toca la palabra para escucharla despacito.",el:()=>$("#rWord")},{t:"Ahora toca su dibujo.",el:()=>byText("#rPics button",rW[1])}],
+  "pal-spell":()=>[...plain(sW)].slice(0,2).map((c,i)=>({t:i?`Después va la ${c}.`:`Escribe la palabra letra por letra. Empieza con la ${c}.`,el:()=>byText("#sTiles .tile:not([disabled])",c)})).concat([{t:"¡Muy bien! Termina la palabra tú solito."}]),
+  "pal-sent":()=>{const p=NM(tS[0]).split(/\s+/);p[p.length-1]+=".";return p.slice(0,2).map((w,i)=>({t:i?`Después va ${w.replace(".","")}.`:`Ordena las palabras para formar la oración. Empieza con ${w}.`,el:()=>byText("#tTiles .tile:not([disabled])",w)})).concat([{t:"¡Muy bien! Termina la oración tú solito."}])},
+  "escribir":()=>[{t:"Pasa tu dedo por encima de la letra gris, sin salirte.",el:()=>$("#pad"),ev:"pointerup"},{t:"Repasa toda la letra. Cuando termines, toca ¡Listo!",el:()=>$("#tCheck")}],
+  "num-count":()=>{const n=$$("#countItems span").length;return[{t:"Toca cada dibujo para contarlo, uno por uno.",el:()=>$("#countItems span")},{t:`Hay ${NUMW[n]}. Toca el número ${n}.`,el:()=>[...$$("#countOpts .opt")].find(b=>+b.textContent===n)}]},
+  "num-sum":()=>{const m=$("#sumQ").textContent.match(/(\d+)\s*\+\s*(\d+)/),a=+m[1],b=+m[2];return[{t:`Cuenta todos los dibujos juntos. ${a} más ${b} son ${a+b}. Toca el ${a+b}.`,el:()=>[...$$("#sumOpts .opt")].find(x=>+x.textContent===a+b)}]},
+  "num-cmp":()=>[{t:"Mira los dos grupos y toca el que tiene más dibujos.",el:()=>[...$$("#cmpRow button")].sort((x,y)=>[...y.textContent].length-[...x.textContent].length)[0]}],
+  "eng-abc":()=>[{t:"Toca la letra A. Escucharás cómo se dice en inglés.",el:()=>$("#eGrid .key")},{t:"¡Muy bien! Toca otras letras para aprender más."}],
+  "eng-words":()=>[{t:"Toca un dibujo para escucharlo en inglés y en español.",el:()=>$("#vGrid .vcard")},{t:"Arriba puedes cambiar de tema: colores, animales, números y más."}],
+  "eng-listen":()=>[{t:"Escucha la palabra en inglés y toca su dibujo. Es este que brilla.",el:()=>byText("#lPics button",lW[1])}],
+  "eng-spell":()=>[{t:`Escucha la palabra y deletréala. Empieza con la letra ${xW[0][0].toUpperCase()}.`,el:()=>byText("#xTiles .tile:not([disabled])",xW[0][0])},{t:"¡Muy bien! Sigue tú solito."}],
+  "eng-sent":()=>{const w=NM(yS[0]).split(/\s+/)[0];return[{t:`Ordena las palabras en inglés. Empieza con ${w}.`,el:()=>byText("#yTiles .tile:not([disabled])",w)},{t:"¡Great job! Termina la oración tú solito."}]}
+};
+let TT=null;
+function endTut(done){const T=TT;if(!T)return;TT=null;if(T.el)T.el.classList.remove("tut-glow");if(T.off)T.off();cancelAnimationFrame(T.raf);
+  $("#tutBox").hidden=true;$("#tutHand").hidden=true;if(done){S.tut[T.key]=1;save()}}
+function maybeTut(key){if(!key||!TUT[key]||(S.tut||{})[key])return;if(!$("#setupModal").hidden||!$("#roundModal").hidden)return;
+  endTut(false);let steps;try{steps=TUT[key]()}catch(e){return}TT={key,steps,i:-1};nextStep()}
+function nextStep(){const T=TT;if(!T)return;if(T.el){T.el.classList.remove("tut-glow");T.el=null}if(T.off){T.off();T.off=null}cancelAnimationFrame(T.raf);
+  T.i++;if(T.i>=T.steps.length){endTut(true);return}
+  const st=T.steps[T.i],idx=T.i;let el=null;try{el=st.el?st.el():null}catch(e){}
+  if(st.el&&!el){nextStep();return}
+  $("#tutText").textContent=st.t;$("#tutBox").hidden=false;speak(st.t,"es",true);
+  if(!el){$("#tutHand").hidden=true;setTimeout(()=>{if(TT===T&&T.i===idx)nextStep()},3600);return}
+  el.classList.add("tut-glow");T.el=el;try{el.scrollIntoView({block:"center",behavior:"smooth"})}catch(e){}
+  const ev=st.ev||"click",h=()=>{if(TT===T&&T.i===idx)setTimeout(()=>{if(TT===T&&T.i===idx)nextStep()},ev==="click"?700:300)};
+  el.addEventListener(ev,h);T.off=()=>el.removeEventListener(ev,h);
+  const hand=$("#tutHand");hand.hidden=false;
+  const pos=()=>{if(TT!==T||T.el!==el)return;const r=el.getBoundingClientRect();hand.style.transform="";
+    hand.style.left=Math.max(4,Math.min(innerWidth-50,r.left+r.width/2-16))+"px";hand.style.top=Math.min(innerHeight-56,r.top+r.height*.55)+"px";T.raf=requestAnimationFrame(pos)};pos();
+}
+$("#tutSkip").onclick=()=>endTut(true);
+$("#tutRep").onclick=()=>{if(TT)speak($("#tutText").textContent,"es")};
+$("#tutReset").onclick=()=>{S.tut={};save();toast("Listo: los tutoriales se mostrarán otra vez en cada juego.")};
+
 /* ---------- PADRES ---------- */
 $("#musicBtn").onclick=()=>{if(M.on&&!M.timer){mStart();return}M.on=!M.on;try{localStorage.setItem("dbMusic",M.on?"1":"0")}catch(e){}if(M.on)mStart();else mStop()};mBtn();
 let setupAge=null;
@@ -950,6 +1009,6 @@ if(!S.setup){$("#setupModal").hidden=false;setTimeout(()=>{try{$("#setupName").f
 $("#nameInput").value=S.name;
 $("#nameInput").addEventListener("input",e=>{S.name=e.target.value.trim();save();render()});
 $("#resetBtn").onclick=()=>$("#resetAsk").hidden=false;
-$("#resetYes").onclick=()=>{const a=S.age;S=newS(S.name);S.age=a;S.setup=true;save();render();$("#resetAsk").hidden=true};
+$("#resetYes").onclick=()=>{const a=S.age,tu=S.tut;S=newS(S.name);S.age=a;S.tut=tu;S.setup=true;save();render();$("#resetAsk").hidden=true};
 render();
 </script>
