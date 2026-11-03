@@ -204,6 +204,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 
 /* Frases de valores */
 .sibIn{width:100%;font:inherit;font-size:18px;text-align:center;padding:10px 14px;border-radius:16px;border:2px solid var(--line);background:var(--stage2);color:var(--ink)}
+.parent .sel{width:100%;font:inherit;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--stage2);color:var(--ink)}
 .parent .chk{display:flex;gap:10px;align-items:center;color:var(--ink);font-size:16px;margin-top:14px;cursor:pointer}
 .parent .chk input{width:22px;height:22px;accent-color:var(--pink);flex:0 0 auto}
 .valBox{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(520px,calc(100% - 32px));background:linear-gradient(120deg,#fff3c4,#ffd9ec);color:#3a1650;border-radius:22px;padding:12px 18px;font-weight:600;font-size:18px;line-height:1.35;text-align:center;z-index:24;box-shadow:0 0 0 3px #fff,0 12px 30px #0008;animation:valIn .5s ease both;pointer-events:none}
@@ -537,6 +538,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
   <div class="panel">
     <label for="nameInput">Nombre del niño o niña</label>
     <input id="nameInput" maxlength="20" value="Dayla">
+    <label for="careSel">Vive con</label>
+    <select id="careSel" class="sel"><option value="">Su familia</option><option value="mp">Mamá y papá</option><option value="m">Mamá</option><option value="p">Papá</option><option value="ab">Abuelos</option><option value="otro">Otro familiar</option></select>
+    <input id="careName" maxlength="30" placeholder="¿Cómo le dice? Ej: tía Rosa" hidden style="margin-top:8px">
     <label for="sibsInput">Hermanos o hermanas (separados por coma)</label>
     <input id="sibsInput" maxlength="60" placeholder="Ej: Sofía, Juan">
     <label class="chk"><input type="checkbox" id="valToggle" checked> Frases de amor, familia y comida sana después de cada logro</label>
@@ -568,6 +572,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
     <input id="setupName" maxlength="20" placeholder="Escribe su nombre" autocomplete="off">
     <label>¿Cuántos años tiene?</label>
     <div class="cats" id="setupAge"></div>
+    <label>¿Con quién vive?</label>
+    <div class="cats" id="setupCare"></div>
+    <input id="setupCareName" class="sibIn" maxlength="30" placeholder="¿Cómo le dice? Ej: tía Rosa" autocomplete="off" hidden>
     <label for="setupSibs">¿Tiene hermanos o hermanas? <span style="font-weight:400;color:var(--soft)">(opcional)</span></label>
     <input id="setupSibs" class="sibIn" maxlength="60" placeholder="Ej: Sofía, Juan" autocomplete="off">
     <p class="mpts" style="font-size:14px;margin:0">💛 Después de cada logro le diremos una frase corta de amor por su familia y de comida sana.</p>
@@ -593,9 +600,9 @@ const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[
 /* ---------- Estado ---------- */
 const AREAS=[["leer","Leer"],["palabras","Palabras"],["escribir","Escribir"],["numeros","Números"],["ingles","English"]];
 const zero=()=>({leer:0,palabras:0,escribir:0,numeros:0,ingles:0});
-const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,ingles:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"",age:null,setup:false,tut:{},sibs:[],values:true});
+const newS=name=>({stars:0,pts:0,leer:0,palabras:0,escribir:0,numeros:0,ingles:0,miss:zero(),streak:0,best:0,perfect:0,name:name??"",age:null,setup:false,tut:{},sibs:[],values:true,care:null});
 let S=newS();
-try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s){S={...S,...s};if(s.setup==null)S.setup=true;S.tut=s.tut||{};S.sibs=Array.isArray(s.sibs)?s.sibs:[];if(s.values==null)S.values=true;S.miss={...zero(),...(s.miss||{})};if(s.pts==null)S.pts=(s.stars||0)*10}}catch(e){}
+try{const s=JSON.parse(localStorage.getItem("daylasBrain")||"null");if(s){S={...S,...s};if(s.setup==null)S.setup=true;S.tut=s.tut||{};S.sibs=Array.isArray(s.sibs)?s.sibs:[];if(s.values==null)S.values=true;if(s.care===undefined)S.care={k:"mp"};S.miss={...zero(),...(s.miss||{})};if(s.pts==null)S.pts=(s.stars||0)*10}}catch(e){}
 const RANKS=[[0,"Semilla 🌱"],[100,"Estrellita ⭐"],[300,"Cantante 🎤"],[600,"Estrella K-pop 🌟"],[1000,"Súper Estrella 💫"],[2000,"Leyenda 👑"]];
 const rankOf=p=>{let i=0;RANKS.forEach((r,j)=>{if(p>=r[0])i=j});return i};
 const gradeOf=a=>a>=.9?"Excelente":a>=.75?"Muy bien":a>=.6?"Bien":"Sigue practicando";
@@ -985,18 +992,26 @@ newListen();
 /* ---------- FRASES DE AMOR, FAMILIA Y COMIDA SANA ---------- */
 // Patrones ericksonianos (guía de Synerge): conjunciones, causativos implicados, órdenes y preguntas enclavadas, citas, presuposiciones.
 const VAL={
- fam:["Y mientras aprendes, puedes sentir cuánto te aman mamá y papá.",
-  "Cada vez que escuchas a mamá y papá, tu corazón se hace más grande.",
-  "Cuando mamá y papá te dicen algo, es porque te aman mucho.",
-  "Me pregunto si ya notaste lo bonito que es ayudar en casa.",
+ famPl:["Y mientras aprendes, puedes sentir cuánto te aman {P}.",
+  "Cada vez que escuchas a {P}, tu corazón se hace más grande.",
+  "Cuando {P} te dicen algo, es porque te aman mucho.",
+  "{P} te cuidan porque te aman. Y tú lo sabes.",
+  "Y respetar a {P} te hace sentir fuerte y feliz.",
+  "Un abrazo a {P} hace que todos sonrían.",
+  "Cuando {P} dicen que es hora de dormir, tu cuerpo ya sabe descansar.",
+  "Lo que {P} hacen por ti, lo hacen con todo su amor."],
+ famSg:["Y mientras aprendes, puedes sentir cuánto te ama {P}.",
+  "Cada vez que escuchas a {P}, tu corazón se hace más grande.",
+  "Cuando {P} te dice algo, es porque te ama mucho.",
+  "{P} te cuida porque te ama. Y tú lo sabes.",
+  "Y respetar a {P} te hace sentir fuerte y feliz.",
+  "Un abrazo a {P} hace que todos sonrían.",
+  "Cuando {P} dice que es hora de dormir, tu cuerpo ya sabe descansar.",
+  "Lo que {P} hace por ti, lo hace con todo su amor."],
+ fam:["Me pregunto si ya notaste lo bonito que es ayudar en casa.",
   "Algunos niños descubren que es fácil hacer caso con alegría.",
-  "Mamá y papá te cuidan porque te aman. Y tú lo sabes.",
-  "Y respetar a mamá y papá te hace sentir fuerte y feliz.",
-  "Un abrazo a mamá y a papá hace que todos sonrían.",
   "Mi abuela decía: quien escucha con amor, aprende el doble.",
-  "Mientras creces, aprendes a dar las gracias y a pedir por favor.",
-  "Cuando mamá dice que es hora de dormir, tu cuerpo ya sabe descansar.",
-  "Lo que mamá y papá hacen por ti, lo hacen con todo su amor."],
+  "Mientras creces, aprendes a dar las gracias y a pedir por favor."],
  sib:["Y jugar con {H} con cariño hace que la casa se llene de alegría.",
   "{H} te quiere mucho, y tú también puedes cuidar a {H}.",
   "Compartir con {H} es una forma bonita de amar.",
@@ -1008,7 +1023,7 @@ const VAL={
   "Los dulces, bombones y chocolatinas dañan los dientes si se comen mucho. Tu sonrisa merece cuidado.",
   "Una arepa con huevo y una fruta te ayudan a pensar mejor que un paquete de papitas.",
   "Me pregunto qué fruta vas a escoger hoy: ¿banano, mandarina o papaya?",
-  "Cuando mamá te sirve sopa y verduras, te está dando amor en un plato.",
+  "Cuando en casa te sirven sopa y verduras, te están dando amor en un plato.",
   "El fríjol, las lentejas y el pollo te alimentan más que las salchichas y los fritos de paquete.",
   "Un jugo natural de fruta te nutre más que un jugo de cajita lleno de azúcar.",
   "Y cada vez que dices no gracias al exceso de dulce, tu cuerpo te dice gracias a ti."],
@@ -1017,10 +1032,12 @@ const VAL={
   "Algunos niños notan que, cuanto más practican, más fácil se vuelve."]
 };
 let valDeck=[],valTm=0;
-function nextVal(){const sib=(S.sibs||[]).filter(Boolean);
-  if(!valDeck.length){let pool=[...VAL.fam,...VAL.food,...VAL.self];if(sib.length)pool=pool.concat(VAL.sib,VAL.sib);valDeck=shuffle(pool)}
+const CARE={mp:["mamá y papá",true],m:["mamá",false],p:["papá",false],ab:["tus abuelos",true]};
+function careP(){const c=S.care||{};if(c.k==="otro"&&c.name)return[c.name,false];return CARE[c.k]||["tu familia",false]}
+function nextVal(){const sib=(S.sibs||[]).filter(Boolean),[P,pl]=careP();
+  if(!valDeck.length){let pool=[...(pl?VAL.famPl:VAL.famSg),...VAL.fam,...VAL.food,...VAL.self];if(sib.length)pool=pool.concat(VAL.sib,VAL.sib);valDeck=shuffle(pool)}
   let t=valDeck.pop();if(/\{H\}/.test(t)&&!sib.length)t=VAL.fam[rnd(VAL.fam.length)];
-  return t.replace(/\{H\}/g,sib[rnd(sib.length)]||"")}
+  t=t.replace(/\{H\}/g,sib[rnd(sib.length)]||"").replace(/\{P\}/g,P);return t.charAt(0).toUpperCase()+t.slice(1)}
 function valMsg(){if(S.values===false||TT)return;const t=nextVal();speak(t,"es",true);
   const v=$("#valBox");v.textContent="💛 "+t;v.hidden=false;clearTimeout(valTm);valTm=setTimeout(()=>v.hidden=true,6000)}
 const parseSibs=t=>t.split(/\s*[,;]\s*|\s+y\s+/i).map(x=>x.trim()).filter(x=>x.length>1).map(x=>x.charAt(0).toUpperCase()+x.slice(1)).slice(0,6);
@@ -1081,18 +1098,23 @@ $("#tutReset").onclick=()=>{S.tut={};save();toast("Listo: los tutoriales se most
 
 /* ---------- PADRES ---------- */
 $("#musicBtn").onclick=()=>{if(M.on&&!M.timer){mStart();return}M.on=!M.on;try{localStorage.setItem("dbMusic",M.on?"1":"0")}catch(e){}if(M.on)mStart();else mStop()};mBtn();
-let setupAge=null;
+let setupAge=null,setupCare=null;
+[["mp","Mamá y papá"],["m","Mamá"],["p","Papá"],["ab","Abuelos"],["otro","Otro familiar"]].forEach(([k,t])=>{const b=document.createElement("button");b.textContent=t;
+  b.onclick=()=>{setupCare=k;$$("#setupCare button").forEach(x=>x.classList.toggle("on",x===b));$("#setupCareName").hidden=k!=="otro";if(k==="otro")$("#setupCareName").focus()};$("#setupCare").appendChild(b)});
+function syncCare(){const c=S.care||{};$("#careSel").value=c.k||"";$("#careName").value=c.name||"";$("#careName").hidden=c.k!=="otro"}
+const saveCare=()=>{const k=$("#careSel").value;$("#careName").hidden=k!=="otro";S.care=k?{k,name:k==="otro"?$("#careName").value.trim():""}:null;valDeck=[];save()};
 ["4","5","6","7","8+"].forEach(a=>{const b=document.createElement("button");b.textContent=a+" años";b.onclick=()=>{setupAge=a;$$("#setupAge button").forEach(x=>x.classList.toggle("on",x===b));chk()};$("#setupAge").appendChild(b)});
 const chk=()=>$("#setupGo").disabled=!$("#setupName").value.trim();
 $("#setupName").addEventListener("input",chk);
 $("#setupName").addEventListener("keydown",e=>{if(e.key==="Enter"&&!$("#setupGo").disabled)$("#setupGo").click()});
 $("#setupGo").onclick=()=>{const n=$("#setupName").value.trim().replace(/\s+/g," ");if(!n)return;
-  S.name=n.charAt(0).toUpperCase()+n.slice(1);S.age=setupAge;S.sibs=parseSibs($("#setupSibs").value);S.values=true;valDeck=[];$("#sibsInput").value=S.sibs.join(", ");S.setup=true;save();render();$("#nameInput").value=S.name;
+  S.name=n.charAt(0).toUpperCase()+n.slice(1);S.age=setupAge;S.sibs=parseSibs($("#setupSibs").value);S.care=setupCare?{k:setupCare,name:setupCare==="otro"?$("#setupCareName").value.trim():""}:null;syncCare();S.values=true;valDeck=[];$("#sibsInput").value=S.sibs.join(", ");S.setup=true;save();render();$("#nameInput").value=S.name;
   $("#setupModal").hidden=true;newSent();newSentEn();newBuild();newRead();say(`¡Hola ${S.name}! Vamos a aprender jugando.`)};
 if(!S.setup){$("#setupModal").hidden=false;setTimeout(()=>{try{$("#setupName").focus()}catch(e){}},300)}
 $("#nameInput").value=S.name;
 $("#sibsInput").value=(S.sibs||[]).join(", ");$("#valToggle").checked=S.values!==false;
 $("#sibsInput").addEventListener("change",e=>{S.sibs=parseSibs(e.target.value);e.target.value=S.sibs.join(", ");valDeck=[];save()});
+syncCare();$("#careSel").addEventListener("change",saveCare);$("#careName").addEventListener("change",saveCare);
 $("#valToggle").addEventListener("change",e=>{S.values=e.target.checked;save();toast(S.values?"Frases de valores activadas.":"Frases de valores desactivadas.")});
 $("#nameInput").addEventListener("input",e=>{S.name=e.target.value.trim();save();render()});
 $("#resetBtn").onclick=()=>$("#resetAsk").hidden=false;
