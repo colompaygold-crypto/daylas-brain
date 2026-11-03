@@ -133,7 +133,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .badge{position:absolute;top:10px;right:14px;z-index:2;background:#fff;color:#c2187f;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.5px}
 .mix{display:grid;gap:12px;margin-bottom:14px}
 .mixrow{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.mixrow button{font-family:var(--letter);font-weight:700;font-size:26px;width:52px;height:52px;border-radius:14px;background:var(--stage2)}
+.mixrow button{font-family:var(--letter);font-weight:700;font-size:24px;width:50px;height:50px;border-radius:14px;background:var(--stage2)}
 .mixrow.v button{background:#ff4fa340;width:64px;height:64px;font-size:34px}
 .mixrow button.on{background:var(--gold);color:var(--night)}
 .eq{font-family:var(--letter);font-weight:700;font-size:clamp(44px,10vw,72px);display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;line-height:1.1}
@@ -151,7 +151,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .pics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
 .pics button{font-size:64px;background:var(--stage2);border-radius:24px;padding:16px 0;border:3px solid transparent}
 .lvl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;color:var(--soft);align-items:center;font-size:16px}
-@media (max-width:560px){.tile{font-size:26px;padding:10px 14px;min-width:52px}.slot{min-width:60px;height:66px;font-size:32px}.slot.sm{min-width:38px;height:54px;font-size:26px}.pics button{font-size:48px}.bigpic{font-size:80px}}
+@media (max-width:560px){.mixrow.v button{width:54px;height:54px;font-size:28px}.mixrow{gap:5px}.tile{font-size:26px;padding:10px 14px;min-width:52px}.slot{min-width:60px;height:66px;font-size:32px}.slot.sm{min-width:38px;height:54px;font-size:26px}.pics button{font-size:48px}.bigpic{font-size:80px}}
 
 /* English */
 .w-eng{grid-column:1/-1;background:linear-gradient(120deg,#7a3cff,#3fe0ff)}
@@ -196,6 +196,14 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
 .setup label{font-weight:600;font-size:17px;margin-top:6px}
 #setupName{width:100%;font:inherit;font-size:22px;text-align:center;padding:12px 14px;border-radius:16px;border:2px solid var(--line);background:var(--stage2);color:var(--ink)}
 .setup .cats{margin:0}
+.news{text-align:left}
+.news h3{text-align:center}.news>div:first-child{text-align:center}
+.news ul{margin:10px 0 16px;padding-left:20px;display:grid;gap:8px;font-size:16px;line-height:1.4}
+.news .btn{display:block;margin:0 auto}
+.setup .why{margin:0;background:#ffffff12;border-radius:16px;padding:10px 12px;font-size:15px;line-height:1.45;color:var(--ink);text-align:left}
+.setup .hint2{font-size:13px;color:var(--soft);margin-top:-6px}
+.modal{overflow-y:auto;padding-block:16px}
+.modal .mbox{margin:auto}
 .setup .btn{font-size:20px;padding:14px 22px;margin-top:6px}
 .setup .btn:disabled{opacity:.4;cursor:not-allowed}
 
@@ -567,19 +575,40 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-o
   <div class="mbox setup">
     <div style="font-size:54px;line-height:1">🌟</div>
     <h3 id="setupTitle">¡Bienvenidos a Dayla's Brain!</h3>
-    <p class="mpts">Antes de jugar, cuéntanos quién va a aprender.</p>
+    <p class="mpts" id="setupLead">Antes de jugar, cuéntanos quién va a aprender.</p>
+    <p class="why">Con estos datos la app llama al niño por su nombre y, después de cada logro, le dice frases cortas de amor y respeto hacia las personas con quienes vive y hacia sus hermanos, y le enseña a comer sano. Todo queda guardado solo en este celular.</p>
     <label for="setupName">¿Cómo se llama el niño o la niña?</label>
+    <span class="hint2">Para saludarlo y felicitarlo por su nombre.</span>
     <input id="setupName" maxlength="20" placeholder="Escribe su nombre" autocomplete="off">
     <label>¿Cuántos años tiene?</label>
+    <span class="hint2">Para acompañar su avance según su edad.</span>
     <div class="cats" id="setupAge"></div>
     <label>¿Con quién vive?</label>
+    <span class="hint2">Para que los mensajes de amor hablen de su familia real.</span>
     <div class="cats" id="setupCare"></div>
     <input id="setupCareName" class="sibIn" maxlength="30" placeholder="¿Cómo le dice? Ej: tía Rosa" autocomplete="off" hidden>
     <label for="setupSibs">¿Tiene hermanos o hermanas? <span style="font-weight:400;color:var(--soft)">(opcional)</span></label>
+    <span class="hint2">Escribe sus nombres para enseñarle a quererlos y cuidarlos.</span>
     <input id="setupSibs" class="sibIn" maxlength="60" placeholder="Ej: Sofía, Juan" autocomplete="off">
     <p class="mpts" style="font-size:14px;margin:0">💛 Después de cada logro le diremos una frase corta de amor por su familia y de comida sana.</p>
     <button class="btn" id="setupGo" disabled>¡Empezar a jugar!</button>
     <p class="mpts" style="font-size:14px">Puedes cambiarlo cuando quieras en la Zona de papás.</p>
+  </div>
+</div>
+<div class="modal" id="newsModal" hidden role="dialog" aria-modal="true" aria-labelledby="newsTitle">
+  <div class="mbox news">
+    <div style="font-size:50px;line-height:1">🎁</div>
+    <h3 id="newsTitle">¿Qué hay de nuevo?</h3>
+    <ul>
+      <li><b>Palabras:</b> combina todo el abecedario con las vocales, arma, lee y escribe palabras y forma oraciones.</li>
+      <li><b>English:</b> sonidos del ABC, vocabulario con dibujos, escuchar, deletrear y oraciones.</li>
+      <li><b>Puntos, niveles y estrellas</b> por cada ronda, con calificación en la Zona de papás.</li>
+      <li><b>Celebraciones:</b> lluvia de estrellitas en cada logro y un gran ¡Hurra! al completar la ronda.</li>
+      <li><b>Mini tutoriales</b> que guían 3 ejercicios la primera vez en cada juego.</li>
+      <li><b>Frases de amor</b> por su familia y de comida sana después de cada logro.</li>
+      <li><b>Música de fondo</b>, instalar como app y compartir desde la app.</li>
+    </ul>
+    <button class="btn" id="newsOk">¡A jugar!</button>
   </div>
 </div>
 <div class="modal" id="roundModal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
@@ -748,7 +777,10 @@ $("#installBtn").onclick=async()=>{
   else if(isIOS)toast("En Safari toca Compartir □↑ y luego «Agregar a inicio».");
   else toast("Abre el menú ⋮ del navegador y elige «Instalar app».");
 };
-try{if("serviceWorker" in navigator&&APP_URL===location.origin+location.pathname)navigator.serviceWorker.register("sw.js").catch(()=>{})}catch(e){}
+try{if("serviceWorker" in navigator&&APP_URL===location.origin+location.pathname){
+  const hadCtrl=!!navigator.serviceWorker.controller;let reloaded=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(hadCtrl&&!reloaded){reloaded=true;location.reload()}});
+  navigator.serviceWorker.register("sw.js").then(r=>{r.update();document.addEventListener("visibilitychange",()=>{if(!document.hidden)r.update()})}).catch(()=>{})}}catch(e){}
 
 /* ---------- Navegación ---------- */
 function go(id){endTut(false);$$("section").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(id==="escribir")setTimeout(setupPad,30);
@@ -867,7 +899,7 @@ newCount();newSum();newCmp();
 const WORDS=[["ma-má","👩"],["pa-pá","👨"],["ca-sa","🏠"],["lu-na","🌙"],["ga-to","🐱"],["pa-to","🦆"],["sa-po","🐸"],["mo-no","🐒"],["de-do","☝️"],["nu-be","☁️"],["so-pa","🍲"],["va-ca","🐮"],["fo-ca","🦭"],["o-so","🐻"],["ro-sa","🌹"],["lu-pa","🔍"],["ca-ma","🛏️"],["bo-ta","👢"],["da-do","🎲"],["ma-no","✋"],["pi-ña","🍍"],["le-che","🥛"],["Day-la","👧"],
   ["pe-lo-ta","⚽"],["to-ma-te","🍅"],["co-ne-jo","🐰"],["pa-lo-ma","🕊️"],["ca-mi-sa","👕"],["mu-ñe-ca","🪆"],["ba-na-no","🍌"],["za-pa-to","👟"],["ga-lle-ta","🍪"],["co-me-ta","🪁"],["ca-ba-llo","🐴"],["pa-ta-ta","🥔"]];
 const SENT=[["Mi mamá me ama","👩💕"],["El gato toma leche","🐱🥛"],["Papá lee un libro","👨📖"],["La luna es bonita","🌙✨"],["{N} canta en la casa","👧🎤🏠"],["El sapo salta","🐸"],["Yo amo a mi papá","👧💕👨"],["La vaca come pasto","🐮🌿"],["El oso toma sopa","🐻🍲"],["Mi pelota es roja","⚽🔴"],["El pato nada","🦆💧"],["{N} come piña","👧🍍"]];
-const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const norm=s=>s.toLowerCase().replace(/ñ/g,"\u0001").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/\u0001/g,"ñ");
 const syls=w=>w[0].split("-"), plain=w=>w[0].replace(/-/g,"");
 let palLvl=2;
 const okW=w=>w[0]!=="Day-la"||norm(S.name||"")==="dayla";
@@ -885,13 +917,16 @@ function tileGame(slotsEl,tilesEl,parts,extras,small,onDone,area,sp){area=area||
 }
 
 /* Combina consonante + vocal */
-const MC="MPSLTNDBCFGRVJ".split(""),MV="AEIOU".split("");let mc="M",mv="A",mixT=null;
+const MC=["B","C","D","F","G","H","J","K","L","M","N","Ñ","P","Q","R","S","T","V","W","X","Y","Z","CH","LL"],MV="AEIOU".split("");
+const sylOf=(c,v)=>c==="Q"?(v==="E"||v==="I"?"qu"+v.toLowerCase():null):(c+v).toLowerCase();let mc="M",mv="A",mixT=null;
 MC.forEach(c=>{const b=document.createElement("button");b.textContent=c;b.onclick=()=>{mc=c;mixUpd(true)};$("#mixC").appendChild(b)});
 MV.forEach(v=>{const b=document.createElement("button");b.textContent=v;b.onclick=()=>{mv=v;mixUpd(true)};$("#mixV").appendChild(b)});
 function mixUpd(talk){
   $$("#mixC button").forEach(b=>b.classList.toggle("on",b.textContent===mc));
   $$("#mixV button").forEach(b=>b.classList.toggle("on",b.textContent===mv));
-  const syl=mc&&mv?(mc+mv).toLowerCase():null;
+  const syl=mc&&mv?sylOf(mc,mv):null;
+  if(mc==="Q"&&mv&&!syl){$("#mixEq").innerHTML=`<span class="c">Q</span><span>+</span><span class="v">${mv}</span><span>=</span><span class="r">?</span>`;
+    $("#mixWords").textContent="La Q siempre va con la U: QUE, QUI. Toca la E o la I.";if(talk)say("La q siempre va con la u. Que, qui.");return}
   $("#mixEq").innerHTML=`<span class="c">${mc||"?"}</span><span>+</span><span class="v">${mv||"?"}</span><span>=</span><span class="r">${syl?syl.toUpperCase()+" "+syl:"?"}</span>`;
   if(!syl){$("#mixWords").textContent="Elige una consonante y una vocal";return}
   const list=WORDS.filter(w=>syls(w).some(x=>norm(x)===syl)).map(plain);
@@ -903,7 +938,7 @@ function mixUpd(talk){
 const mixPool=[...new Set(WORDS.flatMap(syls).map(norm))].filter(s=>s.length===2&&MC.includes(s[0].toUpperCase())&&MV.includes(s[1].toUpperCase()));
 $("#mixChal").onclick=()=>{if(!mixT){mixT=mixPool[rnd(mixPool.length)];mc=null;mv=null;mixUpd(false)}
   $("#mixMsg").textContent="Escucha y arma la sílaba. Toca el reto para oírla otra vez.";say("Arma la sílaba "+mixT)};
-$("#mixSay").onclick=()=>{if(mixT)say(mixT);else if(mc&&mv)say((mc+mv).toLowerCase())};
+$("#mixSay").onclick=()=>{if(mixT)say(mixT);else if(mc&&mv&&sylOf(mc,mv))say(sylOf(mc,mv))};
 mixUpd(false);
 
 /* Arma la palabra con sílabas */
@@ -1067,7 +1102,7 @@ const TUT_REPS=3, EXPLORE=new Set(["leer-abc","leer-syl","pal-mix","eng-abc","en
 let TT=null;
 function endTut(done){const T=TT;if(!T)return;TT=null;if(T.el)T.el.classList.remove("tut-glow");if(T.off)T.off();cancelAnimationFrame(T.raf);clearTimeout(T.tm);
   $("#tutBox").hidden=true;$("#tutHand").hidden=true;if(done){S.tut[T.key]=1;save()}}
-function maybeTut(key){if(!key||!TUT[key]||(S.tut||{})[key])return;if(!$("#setupModal").hidden||!$("#roundModal").hidden)return;
+function maybeTut(key){if(!key||!TUT[key]||(S.tut||{})[key])return;if(!$("#setupModal").hidden||!$("#roundModal").hidden||!$("#newsModal").hidden)return;
   endTut(false);let steps;try{steps=TUT[key](0)}catch(e){return}TT={key,rep:0,steps,i:-1};nextStep()}
 function tutSay(T,t){$("#tutText").textContent=t;$("#tutBox").hidden=false;speak(t,"es",true)}
 function clearStep(T){if(T.el){T.el.classList.remove("tut-glow");T.el=null}if(T.off){T.off();T.off=null}cancelAnimationFrame(T.raf);$("#tutHand").hidden=true}
@@ -1109,8 +1144,21 @@ $("#setupName").addEventListener("input",chk);
 $("#setupName").addEventListener("keydown",e=>{if(e.key==="Enter"&&!$("#setupGo").disabled)$("#setupGo").click()});
 $("#setupGo").onclick=()=>{const n=$("#setupName").value.trim().replace(/\s+/g," ");if(!n)return;
   S.name=n.charAt(0).toUpperCase()+n.slice(1);S.age=setupAge;S.sibs=parseSibs($("#setupSibs").value);S.care=setupCare?{k:setupCare,name:setupCare==="otro"?$("#setupCareName").value.trim():""}:null;syncCare();S.values=true;valDeck=[];$("#sibsInput").value=S.sibs.join(", ");S.setup=true;save();render();$("#nameInput").value=S.name;
-  $("#setupModal").hidden=true;newSent();newSentEn();newBuild();newRead();say(`¡Hola ${S.name}! Vamos a aprender jugando.`)};
-if(!S.setup){$("#setupModal").hidden=false;setTimeout(()=>{try{$("#setupName").focus()}catch(e){}},300)}
+  const wasSet=S.setupV>0||reSetup;S.setupV=SETUP_V;save();
+  $("#setupModal").hidden=true;newSent();newSentEn();newBuild();newRead();say(`¡Hola ${S.name}! Vamos a aprender jugando.`);
+  if(wasSet)setTimeout(showNews,600);else{S.newsV=NEWS_V;save()}};
+const SETUP_V=2,NEWS_V=2;let reSetup=false;
+function showNews(){if((S.newsV||0)>=NEWS_V)return;$("#newsModal").hidden=false}
+$("#newsOk").onclick=()=>{S.newsV=NEWS_V;save();$("#newsModal").hidden=true};
+function openSetup(){const again=S.setup;reSetup=again;
+  if(again){$("#setupTitle").textContent="¡Dayla's Brain se actualizó!";$("#setupLead").textContent="Revisa estos datos para que los nuevos mensajes lleguen bien.";
+    $("#setupName").value=S.name||"";$("#setupSibs").value=(S.sibs||[]).join(", ");
+    if(S.age){setupAge=S.age;$$("#setupAge button").forEach(x=>x.classList.toggle("on",x.textContent===S.age+" años"))}
+    const c=S.care||{};if(c.k){setupCare=c.k;const keys=["mp","m","p","ab","otro"];$$("#setupCare button").forEach((x,i)=>x.classList.toggle("on",keys[i]===c.k));
+      $("#setupCareName").hidden=c.k!=="otro";$("#setupCareName").value=c.name||""}
+    $("#setupGo").textContent="Guardar y seguir jugando";chk()}
+  $("#setupModal").hidden=false;setTimeout(()=>{try{$("#setupName").focus()}catch(e){}},300)}
+if(!S.setup||(S.setupV||0)<SETUP_V)openSetup();else showNews();
 $("#nameInput").value=S.name;
 $("#sibsInput").value=(S.sibs||[]).join(", ");$("#valToggle").checked=S.values!==false;
 $("#sibsInput").addEventListener("change",e=>{S.sibs=parseSibs(e.target.value);e.target.value=S.sibs.join(", ");valDeck=[];save()});
